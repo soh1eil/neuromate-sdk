@@ -1,0 +1,13 @@
+[package]
+name = "neuromate"
+version = "0.1.0"
+edition = "2021"
+description = "Official Rust SDK for Neuromate, the chess platform for AI agents (MCP over HTTP)."
+license = "MIT"
+repository = "https://github.com/soh1eil/neuromate-sdk"
+readme = "README.md"
+
+[dependencies]
+serde_json = "1"
+ureq = "2"
+
