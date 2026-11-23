@@ -1,0 +1,89 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 17,
+  "method": "tools/call",
+  "params": {
+   "name": "make_move",
+   "arguments": {
+    "move": "e4",
+    "client_move_id": "w1",
+    "note": "centre",
+    "expected_ply": 0
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 17,
+  "result": {
+   "content": [
+    {
+     "text": "(No game_id given: used your active game g76p6aeov4.)\nMOVE PLAYED: e4 (e2e4) at ply 1, you used 0.0s.\n\nGAME g76p6aeov4 | standard | 3+0 | casual | agents pool\nYou are WHITE (Bob) vs Alice (agent, Dev Model A, rating 1500)\nSTATUS: started, ply 1. Opponent to move.\nCLOCKS: you 3:00 | opponent 3:00 | clocks start after both sides have moved\nLAST MOVE: 1. white e4 (e2e4) note: \"centre\"\nFEN: rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1\n    a b c d e f g h\n  +-----------------+\n8 | r n b q k b n r | 8\n7 | p p p p p p p p | 7\n6 | . . . . . . . . | 6\n5 | . . . . . . . . | 5\n4 | . . . . P . . . | 4\n3 | . . . . . . . . | 3\n2 | P P P P . P P P | 2\n1 | R N B Q K B N R | 1\n  +-----------------+\n    a b c d e f g h\nMOVES: 1. e4\nNEXT: Waiting for your opponent's first move. Call wait_for_turn {game_id:\"g76p6aeov4\"}. You may abort_game until both sides have moved.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "game": {
+     "game_id": "g76p6aeov4",
+     "status": "started",
+     "variant": "standard",
+     "time_control": "3+0",
+     "rated": false,
+     "pool": "agents",
+     "you": {
+      "color": "white",
+      "name": "Bob",
+      "kind": "agent",
+      "model_label": "Dev Model B",
+      "rating": 1500
+     },
+     "opponent": {
+      "color": "black",
+      "name": "Alice",
+      "kind": "agent",
+      "model_label": "Dev Model A",
+      "rating": 1500
+     },
+     "turn": "black",
+     "your_turn": false,
+     "ply": 1,
+     "fen": "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1",
+     "board": "    a b c d e f g h\n  +-----------------+\n8 | r n b q k b n r | 8\n7 | p p p p p p p p | 7\n6 | . . . . . . . . | 6\n5 | . . . . . . . . | 5\n4 | . . . . P . . . | 4\n3 | . . . . . . . . | 3\n2 | P P P P . P P P | 2\n1 | R N B Q K B N R | 1\n  +-----------------+\n    a b c d e f g h\n",
+     "last_move": {
+      "ply": 1,
+      "uci": "e2e4",
+      "san": "e4",
+      "color": "white",
+      "think_ms": 4,
+      "note": "centre"
+     },
+     "moves_san": [
+      "e4"
+     ],
+     "clocks": {
+      "you_ms": 180000,
+      "opponent_ms": 180000,
+      "first_move_time_left_ms": 90000
+     },
+     "next": "Waiting for your opponent's first move. Call wait_for_turn {game_id:\"g76p6aeov4\"}. You may abort_game until both sides have moved."
+    },
+    "move": {
+     "ply": 1,
+     "uci": "e2e4",
+     "san": "e4",
+     "color": "white",
+     "think_ms": 4,
+     "note": "centre"
+    },
+    "replayed": false,
+    "resolved_game": {
+     "defaulted": true,
+     "finished": false,
+     "game_id": "g76p6aeov4"
+    }
+   }
+  }
+ }
+}

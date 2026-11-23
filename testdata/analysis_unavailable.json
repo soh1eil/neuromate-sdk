@@ -1,0 +1,31 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 29,
+  "method": "tools/call",
+  "params": {
+   "name": "get_analysis",
+   "arguments": {
+    "game_id": "g76p6aeov4"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 29,
+  "result": {
+   "content": [
+    {
+     "text": "Analysis is not enabled on this server. Game g76p6aeov4 is stored with all moves; get_game returns the move list and result.\nNEXT: get_game {game_id:\"g76p6aeov4\"}, or start a new game with join_queue.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "available": false,
+    "game_id": "g76p6aeov4",
+    "status": "unavailable"
+   }
+  }
+ }
+}

@@ -1,0 +1,76 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 13,
+  "method": "tools/call",
+  "params": {
+   "name": "make_move",
+   "arguments": {
+    "move": "e7e5",
+    "client_move_id": "x1"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 13,
+  "result": {
+   "content": [
+    {
+     "text": "(No game_id given: used your active game g76p6aeov4.)\nERROR (not_your_turn): it is white's turn, not yours\nWHAT TO DO: call wait_for_turn, then make_move when it is your turn\n\nGAME g76p6aeov4 | standard | 3+0 | casual | agents pool\nYou are BLACK (Alice) vs Bob (agent, Dev Model B, rating 1500)\nSTATUS: created, ply 0. Opponent to move.\nCLOCKS: you 3:00 | opponent 3:00 | clocks start after both sides have moved\nFEN: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\n    h g f e d c b a\n  +-----------------+\n1 | R N B K Q B N R | 1\n2 | P P P P P P P P | 2\n3 | . . . . . . . . | 3\n4 | . . . . . . . . | 4\n5 | . . . . . . . . | 5\n6 | . . . . . . . . | 6\n7 | p p p p p p p p | 7\n8 | r n b k q b n r | 8\n  +-----------------+\n    h g f e d c b a\nNEXT: Waiting for your opponent's first move. Call wait_for_turn {game_id:\"g76p6aeov4\"}. You may abort_game until both sides have moved.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "error": {
+     "code": "not_your_turn",
+     "game_id": "g76p6aeov4",
+     "hint": "call wait_for_turn, then make_move when it is your turn",
+     "message": "it is white's turn, not yours",
+     "what_to_do": "call wait_for_turn, then make_move when it is your turn"
+    },
+    "game": {
+     "game_id": "g76p6aeov4",
+     "status": "created",
+     "variant": "standard",
+     "time_control": "3+0",
+     "rated": false,
+     "pool": "agents",
+     "you": {
+      "color": "black",
+      "name": "Alice",
+      "kind": "agent",
+      "model_label": "Dev Model A",
+      "rating": 1500
+     },
+     "opponent": {
+      "color": "white",
+      "name": "Bob",
+      "kind": "agent",
+      "model_label": "Dev Model B",
+      "rating": 1500
+     },
+     "turn": "white",
+     "your_turn": false,
+     "ply": 0,
+     "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+     "board": "    h g f e d c b a\n  +-----------------+\n1 | R N B K Q B N R | 1\n2 | P P P P P P P P | 2\n3 | . . . . . . . . | 3\n4 | . . . . . . . . | 4\n5 | . . . . . . . . | 5\n6 | . . . . . . . . | 6\n7 | p p p p p p p p | 7\n8 | r n b k q b n r | 8\n  +-----------------+\n    h g f e d c b a\n",
+     "moves_san": [],
+     "clocks": {
+      "you_ms": 180000,
+      "opponent_ms": 180000,
+      "first_move_time_left_ms": 89997
+     },
+     "next": "Waiting for your opponent's first move. Call wait_for_turn {game_id:\"g76p6aeov4\"}. You may abort_game until both sides have moved."
+    },
+    "resolved_game": {
+     "defaulted": true,
+     "finished": false,
+     "game_id": "g76p6aeov4"
+    }
+   },
+   "isError": true
+  }
+ }
+}

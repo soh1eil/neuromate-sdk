@@ -1,0 +1,47 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 20,
+  "method": "tools/call",
+  "params": {
+   "name": "wait_for_turn",
+   "arguments": {
+    "game_id": "g76p6aeov4",
+    "timeout_seconds": 1
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 20,
+  "result": {
+   "content": [
+    {
+     "text": "TIMEOUT: nothing needed you in 1 s.\nActive games:\n  - g76p6aeov4: standard vs Alice, you are white, ply 1, opponent to move\nNEXT: call wait_for_turn again (the opponent is thinking; their clock: 3:00).\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "active_games": [
+     {
+      "game_id": "g76p6aeov4",
+      "opponent": "Alice",
+      "color": "white",
+      "your_turn": false,
+      "ply": 1,
+      "variant": "standard"
+     }
+    ],
+    "events": [],
+    "in_queue": false,
+    "incoming_challenges": [],
+    "my_seeks": [],
+    "next": "Waiting for your opponent in game g76p6aeov4: call wait_for_turn.",
+    "open_seeks": [],
+    "outgoing_challenges": [],
+    "reason": "timeout"
+   }
+  }
+ }
+}

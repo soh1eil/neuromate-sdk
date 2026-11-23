@@ -1,0 +1,195 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 23,
+  "method": "tools/call",
+  "params": {
+   "name": "offer_draw",
+   "arguments": {}
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 23,
+  "result": {
+   "content": [
+    {
+     "text": "(No game_id given: used your active game g76p6aeov4.)\nDRAW OFFER recorded (if your opponent had already offered, the draw is agreed). Your opponent answers with respond_draw, or declines by moving.\n\nGAME g76p6aeov4 | standard | 3+0 | casual | agents pool\nYou are WHITE (Bob) vs Alice (agent, Dev Model A, rating 1500)\nSTATUS: started, ply 2. IT IS YOUR TURN (white to move).\nCLOCKS: you 2:59 | opponent 3:00 | YOUR clock is running (2:59 left for this move)\nLAST MOVE: 1. black e5 (e7e5)\nDRAW OFFER: from you\nFEN: rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2\n    a b c d e f g h\n  +-----------------+\n8 | r n b q k b n r | 8\n7 | p p p p . p p p | 7\n6 | . . . . . . . . | 6\n5 | . . . . p . . . | 5\n4 | . . . . P . . . | 4\n3 | . . . . . . . . | 3\n2 | P P P P . P P P | 2\n1 | R N B Q K B N R | 1\n  +-----------------+\n    a b c d e f g h\nLEGAL MOVES (29), UCI=SAN:\nb1a3=Na3  b1c3=Nc3  g1e2=Ne2  g1f3=Nf3  g1h3=Nh3  d1e2=Qe2  d1f3=Qf3  d1g4=Qg4  d1h5=Qh5  f1e2=Be2  f1d3=Bd3  f1c4=Bc4  f1b5=Bb5  f1a6=Ba6  a2a3=a3  b2b3=b3  c2c3=c3  d2d3=d3  f2f3=f3  g2g3=g3  h2h3=h3  a2a4=a4  b2b4=b4  c2c4=c4  d2d4=d4  f2f4=f4  g2g4=g4  h2h4=h4  e1e2=Ke2\nMOVES: 1. e4 e5\nNEXT: It is your turn. Choose from legal_moves and call make_move {game_id:\"g76p6aeov4\", move:\"<uci or san>\", client_move_id:\"g76p6aeov4-3\", expected_ply:2}.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "game": {
+     "game_id": "g76p6aeov4",
+     "status": "started",
+     "variant": "standard",
+     "time_control": "3+0",
+     "rated": false,
+     "pool": "agents",
+     "you": {
+      "color": "white",
+      "name": "Bob",
+      "kind": "agent",
+      "model_label": "Dev Model B",
+      "rating": 1500
+     },
+     "opponent": {
+      "color": "black",
+      "name": "Alice",
+      "kind": "agent",
+      "model_label": "Dev Model A",
+      "rating": 1500
+     },
+     "turn": "white",
+     "your_turn": true,
+     "ply": 2,
+     "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+     "board": "    a b c d e f g h\n  +-----------------+\n8 | r n b q k b n r | 8\n7 | p p p p . p p p | 7\n6 | . . . . . . . . | 6\n5 | . . . . p . . . | 5\n4 | . . . . P . . . | 4\n3 | . . . . . . . . | 3\n2 | P P P P . P P P | 2\n1 | R N B Q K B N R | 1\n  +-----------------+\n    a b c d e f g h\n",
+     "legal_moves": [
+      {
+       "uci": "b1a3",
+       "san": "Na3"
+      },
+      {
+       "uci": "b1c3",
+       "san": "Nc3"
+      },
+      {
+       "uci": "g1e2",
+       "san": "Ne2"
+      },
+      {
+       "uci": "g1f3",
+       "san": "Nf3"
+      },
+      {
+       "uci": "g1h3",
+       "san": "Nh3"
+      },
+      {
+       "uci": "d1e2",
+       "san": "Qe2"
+      },
+      {
+       "uci": "d1f3",
+       "san": "Qf3"
+      },
+      {
+       "uci": "d1g4",
+       "san": "Qg4"
+      },
+      {
+       "uci": "d1h5",
+       "san": "Qh5"
+      },
+      {
+       "uci": "f1e2",
+       "san": "Be2"
+      },
+      {
+       "uci": "f1d3",
+       "san": "Bd3"
+      },
+      {
+       "uci": "f1c4",
+       "san": "Bc4"
+      },
+      {
+       "uci": "f1b5",
+       "san": "Bb5"
+      },
+      {
+       "uci": "f1a6",
+       "san": "Ba6"
+      },
+      {
+       "uci": "a2a3",
+       "san": "a3"
+      },
+      {
+       "uci": "b2b3",
+       "san": "b3"
+      },
+      {
+       "uci": "c2c3",
+       "san": "c3"
+      },
+      {
+       "uci": "d2d3",
+       "san": "d3"
+      },
+      {
+       "uci": "f2f3",
+       "san": "f3"
+      },
+      {
+       "uci": "g2g3",
+       "san": "g3"
+      },
+      {
+       "uci": "h2h3",
+       "san": "h3"
+      },
+      {
+       "uci": "a2a4",
+       "san": "a4"
+      },
+      {
+       "uci": "b2b4",
+       "san": "b4"
+      },
+      {
+       "uci": "c2c4",
+       "san": "c4"
+      },
+      {
+       "uci": "d2d4",
+       "san": "d4"
+      },
+      {
+       "uci": "f2f4",
+       "san": "f4"
+      },
+      {
+       "uci": "g2g4",
+       "san": "g4"
+      },
+      {
+       "uci": "h2h4",
+       "san": "h4"
+      },
+      {
+       "uci": "e1e2",
+       "san": "Ke2"
+      }
+     ],
+     "last_move": {
+      "ply": 2,
+      "uci": "e7e5",
+      "san": "e5",
+      "color": "black",
+      "think_ms": 1025
+     },
+     "moves_san": [
+      "e4",
+      "e5"
+     ],
+     "clocks": {
+      "you_ms": 179998,
+      "opponent_ms": 180000,
+      "running": "you",
+      "your_turn_time_left_ms": 179998
+     },
+     "draw_offer": "from_you",
+     "next": "It is your turn. Choose from legal_moves and call make_move {game_id:\"g76p6aeov4\", move:\"<uci or san>\", client_move_id:\"g76p6aeov4-3\", expected_ply:2}."
+    },
+    "resolved_game": {
+     "defaulted": true,
+     "finished": false,
+     "game_id": "g76p6aeov4"
+    }
+   }
+  }
+ }
+}

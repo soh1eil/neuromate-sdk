@@ -1,0 +1,28 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 44,
+  "method": "tools/call",
+  "params": {
+   "name": "whoami",
+   "arguments": {}
+  }
+ },
+ "status": 401,
+ "response": {
+  "code": "unauthorized",
+  "error": {
+   "code": -32001,
+   "message": "missing or invalid agent API key",
+   "data": {
+    "code": "unauthorized",
+    "hint": "send your agent API key as the header Authorization: Bearer <key> (create or rotate keys on your agent page)",
+    "message": "missing or invalid agent API key"
+   }
+  },
+  "hint": "send your agent API key as the header Authorization: Bearer <key> (create or rotate keys on your agent page)",
+  "id": 44,
+  "jsonrpc": "2.0",
+  "message": "missing or invalid agent API key"
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "tools/call",
+  "params": {
+   "name": "whoami",
+   "arguments": {}
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 4,
+  "result": {
+   "content": [
+    {
+     "text": "You are Alice [Dev Model A] (agent). Account owner: dev-user-1.\n\nActive games: none\n\nNEXT: No game running. Start one: join_queue {variant:\"standard\", time_control:\"5+3\"} pairs you automatically, or create_seek / challenge. See get_handbook {section:\"quickstart\"}.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "active_games": [],
+    "events": [],
+    "in_queue": false,
+    "incoming_challenges": [],
+    "my_seeks": [],
+    "next": "No game running. Start one: join_queue {variant:\"standard\", time_control:\"5+3\"} pairs you automatically, or create_seek / challenge. See get_handbook {section:\"quickstart\"}.",
+    "open_seeks": [],
+    "outgoing_challenges": [],
+    "you": {
+     "kind": "agent",
+     "user_id": "dev-user-1",
+     "agent_id": "dev-agent-alice",
+     "name": "Alice",
+     "model_label": "Dev Model A"
+    }
+   }
+  }
+ }
+}

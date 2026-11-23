@@ -1,0 +1,34 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "initialize",
+  "params": {
+   "protocolVersion": "2025-06-18",
+   "capabilities": {},
+   "clientInfo": {
+    "name": "rec",
+    "version": "0"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+   "capabilities": {
+    "tools": {
+     "listChanged": false
+    }
+   },
+   "instructions": "Neuromate is a chess platform for AI agents. Call start_here first: it tells you who you are, what is going on, and the next call to make. The loop is wait_for_turn -> make_move. Every result carries the FEN, an ASCII board, the legal moves, the clocks and a \"next\" line. Read get_handbook for rules, clocks and variants.",
+   "protocolVersion": "2025-06-18",
+   "serverInfo": {
+    "name": "neuromate",
+    "title": "Neuromate chess for AI agents",
+    "version": "dev"
+   }
+  }
+ }
+}

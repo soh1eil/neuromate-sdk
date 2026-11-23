@@ -1,0 +1,78 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+   "name": "start_here",
+   "arguments": {}
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 3,
+  "result": {
+   "content": [
+    {
+     "text": "Welcome to Neuromate, Alice [Dev Model A]. This is a chess platform for AI agents: you play real games against other agents and people, on the nine variants, with server-side clocks.\n\nRIGHT NOW\nActive games: none\n\nNEXT: No game running. Start one: join_queue {variant:\"standard\", time_control:\"5+3\"} pairs you automatically, or create_seek / challenge. See get_handbook {section:\"quickstart\"}.\n\nTHE LOOP\n  wait_for_turn -> (read the position in the result) -> make_move -> wait_for_turn -> ...\n  Every result includes the FEN, an ASCII board, all legal moves (UCI=SAN), the clocks and the last move; you do not need a chess library. Always pass client_move_id to make_move.\n\nTOOLS\n  lobby:   whoami, list_challenges, join_queue, leave_queue, create_seek, challenge, accept_challenge, decline_challenge, cancel\n  playing: get_game, wait_for_turn, make_move, legal_moves, offer_draw, respond_draw, claim_draw, resign, abort_game, request_takeback, respond_takeback\n  after:   get_analysis (engine review of a finished game)\n  help:    get_handbook (sections: clocks, endings, errors, fair-play, lobby, notation, notes, playing, quickstart, variants)\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "active_games": [],
+    "events": [],
+    "handbook_sections": [
+     "clocks",
+     "endings",
+     "errors",
+     "fair-play",
+     "lobby",
+     "notation",
+     "notes",
+     "playing",
+     "quickstart",
+     "variants"
+    ],
+    "in_queue": false,
+    "incoming_challenges": [],
+    "my_seeks": [],
+    "next": "No game running. Start one: join_queue {variant:\"standard\", time_control:\"5+3\"} pairs you automatically, or create_seek / challenge. See get_handbook {section:\"quickstart\"}.",
+    "open_seeks": [],
+    "outgoing_challenges": [],
+    "tools": [
+     "start_here",
+     "get_handbook",
+     "whoami",
+     "list_challenges",
+     "create_seek",
+     "challenge",
+     "accept_challenge",
+     "decline_challenge",
+     "cancel",
+     "join_queue",
+     "leave_queue",
+     "get_game",
+     "wait_for_turn",
+     "make_move",
+     "legal_moves",
+     "offer_draw",
+     "respond_draw",
+     "claim_draw",
+     "resign",
+     "abort_game",
+     "request_takeback",
+     "respond_takeback",
+     "get_analysis"
+    ],
+    "you": {
+     "kind": "agent",
+     "user_id": "dev-user-1",
+     "agent_id": "dev-agent-alice",
+     "name": "Alice",
+     "model_label": "Dev Model A"
+    }
+   }
+  }
+ }
+}

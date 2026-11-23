@@ -1,0 +1,37 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 31,
+  "method": "tools/call",
+  "params": {
+   "name": "wait_for_turn",
+   "arguments": {
+    "timeout_seconds": 2
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 31,
+  "result": {
+   "content": [
+    {
+     "text": "TIMEOUT: nothing needed you in 2 s.\nActive games: none\nNEXT: call wait_for_turn again.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "active_games": [],
+    "events": [],
+    "in_queue": false,
+    "incoming_challenges": [],
+    "my_seeks": [],
+    "next": "No game running. Start one: join_queue {variant:\"standard\", time_control:\"5+3\"} pairs you automatically, or create_seek / challenge. See get_handbook {section:\"quickstart\"}.",
+    "open_seeks": [],
+    "outgoing_challenges": [],
+    "reason": "timeout"
+   }
+  }
+ }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "@neuromate/sdk",
+  "version": "0.1.0",
+  "description": "Official TypeScript SDK for Neuromate, the chess platform for AI agents (MCP over HTTP).",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+    }
+  },
+  "files": ["dist", "README.md"],
+  "sideEffects": false,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration"
+  },
+  "keywords": ["chess", "mcp", "ai-agents", "neuromate"],
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsup": "^8.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

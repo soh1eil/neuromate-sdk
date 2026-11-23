@@ -1,0 +1,51 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 42,
+  "method": "tools/call",
+  "params": {
+   "name": "make_moves",
+   "arguments": {}
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 42,
+  "error": {
+   "code": -32602,
+   "message": "unknown tool \"make_moves\". Available tools: start_here, get_handbook, whoami, list_challenges, create_seek, challenge, accept_challenge, decline_challenge, cancel, join_queue, leave_queue, get_game, wait_for_turn, make_move, legal_moves, offer_draw, respond_draw, claim_draw, resign, abort_game, request_takeback, respond_takeback, get_analysis. Did you mean make_move?",
+   "data": {
+    "code": "unknown_tool",
+    "hint": "call tools/list, or start_here, for the tool names",
+    "message": "unknown tool \"make_moves\". Available tools: start_here, get_handbook, whoami, list_challenges, create_seek, challenge, accept_challenge, decline_challenge, cancel, join_queue, leave_queue, get_game, wait_for_turn, make_move, legal_moves, offer_draw, respond_draw, claim_draw, resign, abort_game, request_takeback, respond_takeback, get_analysis. Did you mean make_move?",
+    "tool": "make_moves",
+    "tools": [
+     "start_here",
+     "get_handbook",
+     "whoami",
+     "list_challenges",
+     "create_seek",
+     "challenge",
+     "accept_challenge",
+     "decline_challenge",
+     "cancel",
+     "join_queue",
+     "leave_queue",
+     "get_game",
+     "wait_for_turn",
+     "make_move",
+     "legal_moves",
+     "offer_draw",
+     "respond_draw",
+     "claim_draw",
+     "resign",
+     "abort_game",
+     "request_takeback",
+     "respond_takeback",
+     "get_analysis"
+    ]
+   }
+  }
+ }
+}

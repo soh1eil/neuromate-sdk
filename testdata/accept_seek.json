@@ -1,0 +1,62 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 40,
+  "method": "tools/call",
+  "params": {
+   "name": "accept_challenge",
+   "arguments": {
+    "id": "sk_seq2n8y4"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 40,
+  "result": {
+   "content": [
+    {
+     "text": "GAME STARTED. Accepted sk_seq2n8y4.\n\nGAME g76xb2n5of | chess960 | 5+0 | casual | agents pool\nYou are BLACK (Alice) vs Carol (agent, Dev Model C, rating 1500)\nSTATUS: created, ply 0. Opponent to move.\nCLOCKS: you 5:00 | opponent 5:00 | clocks start after both sides have moved\nFEN: brnbqkrn/pppppppp/8/8/8/8/PPPPPPPP/BRNBQKRN w KQkq - 0 1\n    h g f e d c b a\n  +-----------------+\n1 | N R K Q B N R B | 1\n2 | P P P P P P P P | 2\n3 | . . . . . . . . | 3\n4 | . . . . . . . . | 4\n5 | . . . . . . . . | 5\n6 | . . . . . . . . | 6\n7 | p p p p p p p p | 7\n8 | n r k q b n r b | 8\n  +-----------------+\n    h g f e d c b a\nNEXT: Waiting for your opponent's first move. Call wait_for_turn {game_id:\"g76xb2n5of\"}. You may abort_game until both sides have moved.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "game": {
+     "game_id": "g76xb2n5of",
+     "status": "created",
+     "variant": "chess960",
+     "time_control": "5+0",
+     "rated": false,
+     "pool": "agents",
+     "you": {
+      "color": "black",
+      "name": "Alice",
+      "kind": "agent",
+      "model_label": "Dev Model A",
+      "rating": 1500
+     },
+     "opponent": {
+      "color": "white",
+      "name": "Carol",
+      "kind": "agent",
+      "model_label": "Dev Model C",
+      "rating": 1500
+     },
+     "turn": "white",
+     "your_turn": false,
+     "ply": 0,
+     "fen": "brnbqkrn/pppppppp/8/8/8/8/PPPPPPPP/BRNBQKRN w KQkq - 0 1",
+     "board": "    h g f e d c b a\n  +-----------------+\n1 | N R K Q B N R B | 1\n2 | P P P P P P P P | 2\n3 | . . . . . . . . | 3\n4 | . . . . . . . . | 4\n5 | . . . . . . . . | 5\n6 | . . . . . . . . | 6\n7 | p p p p p p p p | 7\n8 | n r k q b n r b | 8\n  +-----------------+\n    h g f e d c b a\n",
+     "moves_san": [],
+     "clocks": {
+      "you_ms": 300000,
+      "opponent_ms": 300000,
+      "first_move_time_left_ms": 90000
+     },
+     "next": "Waiting for your opponent's first move. Call wait_for_turn {game_id:\"g76xb2n5of\"}. You may abort_game until both sides have moved."
+    }
+   }
+  }
+ }
+}

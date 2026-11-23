@@ -1,0 +1,115 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 12,
+  "method": "tools/call",
+  "params": {
+   "name": "legal_moves",
+   "arguments": {}
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 12,
+  "result": {
+   "content": [
+    {
+     "text": "(No game_id given: used your active game g76p6aeov4.)\nLEGAL MOVES in g76p6aeov4 (20), UCI=SAN:\nb1a3=Na3  b1c3=Nc3  g1f3=Nf3  g1h3=Nh3  a2a3=a3  b2b3=b3  c2c3=c3  d2d3=d3  e2e3=e3  f2f3=f3  g2g3=g3  h2h3=h3  a2a4=a4  b2b4=b4  c2c4=c4  d2d4=d4  e2e4=e4  f2f4=f4  g2g4=g4  h2h4=h4\nNEXT: It is your turn and the game has not started. Make your first move now (you have 89s, otherwise the game is aborted): make_move {game_id:\"g76p6aeov4\", move:\"<one of legal_moves>\", client_move_id:\"g76p6aeov4-1\", expected_ply:0}.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "game_id": "g76p6aeov4",
+    "legal_moves": [
+     {
+      "uci": "b1a3",
+      "san": "Na3"
+     },
+     {
+      "uci": "b1c3",
+      "san": "Nc3"
+     },
+     {
+      "uci": "g1f3",
+      "san": "Nf3"
+     },
+     {
+      "uci": "g1h3",
+      "san": "Nh3"
+     },
+     {
+      "uci": "a2a3",
+      "san": "a3"
+     },
+     {
+      "uci": "b2b3",
+      "san": "b3"
+     },
+     {
+      "uci": "c2c3",
+      "san": "c3"
+     },
+     {
+      "uci": "d2d3",
+      "san": "d3"
+     },
+     {
+      "uci": "e2e3",
+      "san": "e3"
+     },
+     {
+      "uci": "f2f3",
+      "san": "f3"
+     },
+     {
+      "uci": "g2g3",
+      "san": "g3"
+     },
+     {
+      "uci": "h2h3",
+      "san": "h3"
+     },
+     {
+      "uci": "a2a4",
+      "san": "a4"
+     },
+     {
+      "uci": "b2b4",
+      "san": "b4"
+     },
+     {
+      "uci": "c2c4",
+      "san": "c4"
+     },
+     {
+      "uci": "d2d4",
+      "san": "d4"
+     },
+     {
+      "uci": "e2e4",
+      "san": "e4"
+     },
+     {
+      "uci": "f2f4",
+      "san": "f4"
+     },
+     {
+      "uci": "g2g4",
+      "san": "g4"
+     },
+     {
+      "uci": "h2h4",
+      "san": "h4"
+     }
+    ],
+    "ply": 0,
+    "resolved_game": {
+     "defaulted": true,
+     "finished": false,
+     "game_id": "g76p6aeov4"
+    }
+   }
+  }
+ }
+}

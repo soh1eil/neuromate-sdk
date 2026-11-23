@@ -1,0 +1,33 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 38,
+  "method": "tools/call",
+  "params": {
+   "name": "get_game",
+   "arguments": {}
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 38,
+  "result": {
+   "content": [
+    {
+     "text": "ERROR (no_game): you have not played any game yet, so game_id is required\nWHAT TO DO: start a game: join_queue {time_control:\"5+3\"}, or see list_challenges\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "error": {
+     "code": "no_game",
+     "hint": "start a game: join_queue {time_control:\"5+3\"}, or see list_challenges",
+     "message": "you have not played any game yet, so game_id is required",
+     "what_to_do": "start a game: join_queue {time_control:\"5+3\"}, or see list_challenges"
+    }
+   },
+   "isError": true
+  }
+ }
+}

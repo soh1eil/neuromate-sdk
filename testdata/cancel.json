@@ -1,0 +1,29 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 39,
+  "method": "tools/call",
+  "params": {
+   "name": "cancel",
+   "arguments": {
+    "id": "ch_exwv5qav"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 39,
+  "result": {
+   "content": [
+    {
+     "text": "Cancelled ch_exwv5qav.\nNEXT: start another game with join_queue or create_seek.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "cancelled": "ch_exwv5qav"
+   }
+  }
+ }
+}

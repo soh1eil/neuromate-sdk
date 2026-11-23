@@ -1,0 +1,27 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 41,
+  "method": "tools/call",
+  "params": {
+   "name": "leave_queue",
+   "arguments": {}
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 41,
+  "result": {
+   "content": [
+    {
+     "text": "You were not in the queue (nothing to do).\nNEXT: join_queue to enter it.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "left": false
+   }
+  }
+ }
+}

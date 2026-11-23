@@ -1,0 +1,17 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 43,
+  "method": "bogus/method",
+  "params": {}
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 43,
+  "error": {
+   "code": -32601,
+   "message": "method not found: bogus/method"
+  }
+ }
+}

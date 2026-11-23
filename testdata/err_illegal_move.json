@@ -1,0 +1,183 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 14,
+  "method": "tools/call",
+  "params": {
+   "name": "make_move",
+   "arguments": {
+    "move": "e2e5",
+    "client_move_id": "x2"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 14,
+  "result": {
+   "content": [
+    {
+     "text": "(No game_id given: used your active game g76p6aeov4.)\nERROR (illegal_move): e2e5: pawn on e2 cannot move to e5; legal pawn moves from e2: e2e3, e2e4\nWHAT TO DO: illegal attempt 1 of 25 allowed for this turn (24 remaining); the game is forfeited when they run out. Pick one of the legal moves listed\n\nGAME g76p6aeov4 | standard | 3+0 | casual | agents pool\nYou are WHITE (Bob) vs Alice (agent, Dev Model A, rating 1500)\nSTATUS: created, ply 0. IT IS YOUR TURN (white to move).\nCLOCKS: you 3:00 | opponent 3:00 | clocks start after both sides have moved\nFEN: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\n    a b c d e f g h\n  +-----------------+\n8 | r n b q k b n r | 8\n7 | p p p p p p p p | 7\n6 | . . . . . . . . | 6\n5 | . . . . . . . . | 5\n4 | . . . . . . . . | 4\n3 | . . . . . . . . | 3\n2 | P P P P P P P P | 2\n1 | R N B Q K B N R | 1\n  +-----------------+\n    a b c d e f g h\nLEGAL MOVES (20), UCI=SAN:\nb1a3=Na3  b1c3=Nc3  g1f3=Nf3  g1h3=Nh3  a2a3=a3  b2b3=b3  c2c3=c3  d2d3=d3  e2e3=e3  f2f3=f3  g2g3=g3  h2h3=h3  a2a4=a4  b2b4=b4  c2c4=c4  d2d4=d4  e2e4=e4  f2f4=f4  g2g4=g4  h2h4=h4\nNEXT: It is your turn and the game has not started. Make your first move now (you have 89s, otherwise the game is aborted): make_move {game_id:\"g76p6aeov4\", move:\"<one of legal_moves>\", client_move_id:\"g76p6aeov4-1\", expected_ply:0}.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "error": {
+     "code": "illegal_move",
+     "game_id": "g76p6aeov4",
+     "hint": "illegal attempt 1 of 25 allowed for this turn (24 remaining); the game is forfeited when they run out. Pick one of the legal moves listed",
+     "illegal_attempts_budget": 25,
+     "illegal_attempts_remaining": 24,
+     "illegal_attempts_used": 1,
+     "legal_moves": [
+      "b1a3",
+      "b1c3",
+      "g1f3",
+      "g1h3",
+      "a2a3",
+      "b2b3",
+      "c2c3",
+      "d2d3",
+      "e2e3",
+      "f2f3",
+      "g2g3",
+      "h2h3",
+      "a2a4",
+      "b2b4",
+      "c2c4",
+      "d2d4",
+      "e2e4",
+      "f2f4",
+      "g2g4",
+      "h2h4"
+     ],
+     "message": "e2e5: pawn on e2 cannot move to e5; legal pawn moves from e2: e2e3, e2e4",
+     "what_to_do": "illegal attempt 1 of 25 allowed for this turn (24 remaining); the game is forfeited when they run out. Pick one of the legal moves listed"
+    },
+    "game": {
+     "game_id": "g76p6aeov4",
+     "status": "created",
+     "variant": "standard",
+     "time_control": "3+0",
+     "rated": false,
+     "pool": "agents",
+     "you": {
+      "color": "white",
+      "name": "Bob",
+      "kind": "agent",
+      "model_label": "Dev Model B",
+      "rating": 1500
+     },
+     "opponent": {
+      "color": "black",
+      "name": "Alice",
+      "kind": "agent",
+      "model_label": "Dev Model A",
+      "rating": 1500
+     },
+     "turn": "white",
+     "your_turn": true,
+     "ply": 0,
+     "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+     "board": "    a b c d e f g h\n  +-----------------+\n8 | r n b q k b n r | 8\n7 | p p p p p p p p | 7\n6 | . . . . . . . . | 6\n5 | . . . . . . . . | 5\n4 | . . . . . . . . | 4\n3 | . . . . . . . . | 3\n2 | P P P P P P P P | 2\n1 | R N B Q K B N R | 1\n  +-----------------+\n    a b c d e f g h\n",
+     "legal_moves": [
+      {
+       "uci": "b1a3",
+       "san": "Na3"
+      },
+      {
+       "uci": "b1c3",
+       "san": "Nc3"
+      },
+      {
+       "uci": "g1f3",
+       "san": "Nf3"
+      },
+      {
+       "uci": "g1h3",
+       "san": "Nh3"
+      },
+      {
+       "uci": "a2a3",
+       "san": "a3"
+      },
+      {
+       "uci": "b2b3",
+       "san": "b3"
+      },
+      {
+       "uci": "c2c3",
+       "san": "c3"
+      },
+      {
+       "uci": "d2d3",
+       "san": "d3"
+      },
+      {
+       "uci": "e2e3",
+       "san": "e3"
+      },
+      {
+       "uci": "f2f3",
+       "san": "f3"
+      },
+      {
+       "uci": "g2g3",
+       "san": "g3"
+      },
+      {
+       "uci": "h2h3",
+       "san": "h3"
+      },
+      {
+       "uci": "a2a4",
+       "san": "a4"
+      },
+      {
+       "uci": "b2b4",
+       "san": "b4"
+      },
+      {
+       "uci": "c2c4",
+       "san": "c4"
+      },
+      {
+       "uci": "d2d4",
+       "san": "d4"
+      },
+      {
+       "uci": "e2e4",
+       "san": "e4"
+      },
+      {
+       "uci": "f2f4",
+       "san": "f4"
+      },
+      {
+       "uci": "g2g4",
+       "san": "g4"
+      },
+      {
+       "uci": "h2h4",
+       "san": "h4"
+      }
+     ],
+     "moves_san": [],
+     "clocks": {
+      "you_ms": 180000,
+      "opponent_ms": 180000,
+      "first_move_time_left_ms": 89997
+     },
+     "next": "It is your turn and the game has not started. Make your first move now (you have 89s, otherwise the game is aborted): make_move {game_id:\"g76p6aeov4\", move:\"<one of legal_moves>\", client_move_id:\"g76p6aeov4-1\", expected_ply:0}."
+    },
+    "resolved_game": {
+     "defaulted": true,
+     "finished": false,
+     "game_id": "g76p6aeov4"
+    }
+   },
+   "isError": true
+  }
+ }
+}

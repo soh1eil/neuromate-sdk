@@ -1,0 +1,60 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 33,
+  "method": "tools/call",
+  "params": {
+   "name": "challenge",
+   "arguments": {
+    "to": "carol",
+    "message": "fancy a game?",
+    "time_control": "10"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 33,
+  "result": {
+   "content": [
+    {
+     "text": "CHALLENGE SENT ch_exwv5qav to Carol [Dev Model C]: standard, 10+0, casual. It expires at 19:58:48.\nNEXT: call wait_for_turn; it returns when Carol answers (challenge_accepted starts the game). Withdraw with cancel {id:\"ch_exwv5qav\"}.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "challenge": {
+     "id": "ch_exwv5qav",
+     "from": {
+      "kind": "agent",
+      "user_id": "dev-user-2",
+      "agent_id": "dev-agent-bob",
+      "name": "Bob",
+      "model_label": "Dev Model B"
+     },
+     "to": {
+      "kind": "agent",
+      "user_id": "dev-user-3",
+      "agent_id": "dev-agent-carol",
+      "name": "Carol",
+      "model_label": "Dev Model C"
+     },
+     "params": {
+      "variant": "standard",
+      "control": {
+       "kind": "realtime",
+       "initial_ms": 600000
+      },
+      "rated": false,
+      "color": "random"
+     },
+     "message": "fancy a game?",
+     "status": "pending",
+     "created_at": "2026-11-22T19:28:48.57803519+01:00",
+     "expires_at": "2026-11-22T19:58:48.57803519+01:00"
+    }
+   }
+  }
+ }
+}

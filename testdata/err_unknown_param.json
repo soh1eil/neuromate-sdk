@@ -1,0 +1,36 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 19,
+  "method": "tools/call",
+  "params": {
+   "name": "make_move",
+   "arguments": {
+    "move": "e4",
+    "bogus": 1
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 19,
+  "result": {
+   "content": [
+    {
+     "text": "ERROR (invalid_params): unknown parameter \"bogus\" for make_move\nWHAT TO DO: allowed parameters for make_move: client_move_id, expected_ply, game_id, move, note\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "error": {
+     "code": "invalid_params",
+     "hint": "allowed parameters for make_move: client_move_id, expected_ply, game_id, move, note",
+     "message": "unknown parameter \"bogus\" for make_move",
+     "what_to_do": "allowed parameters for make_move: client_move_id, expected_ply, game_id, move, note"
+    }
+   },
+   "isError": true
+  }
+ }
+}

@@ -1,0 +1,89 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 37,
+  "method": "tools/call",
+  "params": {
+   "name": "make_move",
+   "arguments": {
+    "move": "Nf3"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 37,
+  "result": {
+   "content": [
+    {
+     "text": "(No game_id given: used your most recent game g76p6aeov4, which has finished. Pass game_id to pick another.)\nERROR (game_over): the game is already over: White wins by resignation\nWHAT TO DO: the game has ended; get_game shows the final position, join_queue or create_seek starts a new one\n\nGAME g76p6aeov4 | standard | 3+0 | casual | agents pool\nYou are BLACK (Alice) vs Bob (agent, Dev Model B, rating 1500)\nSTATUS: FINISHED. White wins by resignation\nCLOCKS: you 3:00 | opponent 3:00\nLAST MOVE: 1. black e5 (e7e5)\nFEN: rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2\n    h g f e d c b a\n  +-----------------+\n1 | R N B K Q B N R | 1\n2 | P P P . P P P P | 2\n3 | . . . . . . . . | 3\n4 | . . . P . . . . | 4\n5 | . . . p . . . . | 5\n6 | . . . . . . . . | 6\n7 | p p p . p p p p | 7\n8 | r n b k q b n r | 8\n  +-----------------+\n    h g f e d c b a\nMOVES: 1. e4 e5\nNEXT: The game is over. Start another with join_queue or create_seek, or look for invitations with list_challenges.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "error": {
+     "code": "game_over",
+     "game_id": "g76p6aeov4",
+     "hint": "the game has ended; get_game shows the final position, join_queue or create_seek starts a new one",
+     "message": "the game is already over: White wins by resignation",
+     "what_to_do": "the game has ended; get_game shows the final position, join_queue or create_seek starts a new one"
+    },
+    "game": {
+     "game_id": "g76p6aeov4",
+     "status": "finished",
+     "variant": "standard",
+     "time_control": "3+0",
+     "rated": false,
+     "pool": "agents",
+     "you": {
+      "color": "black",
+      "name": "Alice",
+      "kind": "agent",
+      "model_label": "Dev Model A",
+      "rating": 1500
+     },
+     "opponent": {
+      "color": "white",
+      "name": "Bob",
+      "kind": "agent",
+      "model_label": "Dev Model B",
+      "rating": 1500
+     },
+     "your_turn": false,
+     "ply": 2,
+     "fen": "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+     "board": "    h g f e d c b a\n  +-----------------+\n1 | R N B K Q B N R | 1\n2 | P P P . P P P P | 2\n3 | . . . . . . . . | 3\n4 | . . . P . . . . | 4\n5 | . . . p . . . . | 5\n6 | . . . . . . . . | 6\n7 | p p p . p p p p | 7\n8 | r n b k q b n r | 8\n  +-----------------+\n    h g f e d c b a\n",
+     "last_move": {
+      "ply": 2,
+      "uci": "e7e5",
+      "san": "e5",
+      "color": "black",
+      "think_ms": 1025
+     },
+     "moves_san": [
+      "e4",
+      "e5"
+     ],
+     "clocks": {
+      "you_ms": 180000,
+      "opponent_ms": 180000
+     },
+     "result": {
+      "score": "1-0",
+      "winner": "white",
+      "termination": "resignation",
+      "text": "White wins by resignation"
+     },
+     "next": "The game is over. Start another with join_queue or create_seek, or look for invitations with list_challenges."
+    },
+    "resolved_game": {
+     "defaulted": true,
+     "finished": true,
+     "game_id": "g76p6aeov4"
+    }
+   },
+   "isError": true
+  }
+ }
+}

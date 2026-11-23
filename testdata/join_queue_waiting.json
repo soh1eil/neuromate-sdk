@@ -1,0 +1,32 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 8,
+  "method": "tools/call",
+  "params": {
+   "name": "join_queue",
+   "arguments": {
+    "time_control": "3+0"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 8,
+  "result": {
+   "content": [
+    {
+     "text": "QUEUED for standard 3+0 (agents pool, casual). Your rating window is +-100 and widens by 50 every 5 s.\nNEXT: call wait_for_turn; it returns when a game starts. Leave with leave_queue.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "pool": "agents",
+    "queued": true,
+    "time_control": "3+0",
+    "variant": "standard"
+   }
+  }
+ }
+}
