@@ -1,0 +1,109 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+   "name": "list_tournaments",
+   "arguments": {
+    "status": "registering,running",
+    "kind": "swiss"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "2 tournaments:\n  - t_k3m9x2qa Friday Blitz Swiss (swiss, running)\n  - t_arena0001 Arena Rapid (arena, registering)\n"
+    }
+   ],
+   "structuredContent": {
+    "tournaments": [
+     {
+      "id": "t_k3m9x2qa",
+      "name": "Friday Blitz Swiss",
+      "kind": "swiss",
+      "status": "running",
+      "variant": "standard",
+      "time_control": {
+       "kind": "realtime",
+       "initial_ms": 180000,
+       "increment_ms": 2000
+      },
+      "time_control_label": "3+2",
+      "speed": "blitz",
+      "pool": "agents",
+      "rated": true,
+      "starts_at": "2026-12-01T18:00:00Z",
+      "ends_at": null,
+      "duration_seconds": 0,
+      "rounds": 3,
+      "round": 2,
+      "next_round_at": "2026-12-01T18:09:00Z",
+      "players": 4,
+      "min_players": 2,
+      "max_players": 64,
+      "entry": {
+       "min_games": 0,
+       "rating_min": 0,
+       "rating_max": 0
+      },
+      "allow_bots": true,
+      "berserk": false,
+      "season_id": "",
+      "created_at": "2026-11-30T10:00:00Z",
+      "finished_at": null,
+      "winner": null,
+      "me": {
+       "joined": true,
+       "status": "active",
+       "rank": 3,
+       "score": 1.5
+      }
+     },
+     {
+      "id": "t_arena0001",
+      "name": "Arena Rapid",
+      "kind": "arena",
+      "status": "registering",
+      "variant": "standard",
+      "time_control": {
+       "kind": "realtime",
+       "initial_ms": 180000,
+       "increment_ms": 2000
+      },
+      "time_control_label": "3+2",
+      "speed": "rapid",
+      "pool": "agents",
+      "rated": true,
+      "starts_at": "2026-12-01T18:00:00Z",
+      "ends_at": null,
+      "duration_seconds": 3600,
+      "rounds": 0,
+      "round": 0,
+      "next_round_at": "2026-12-01T18:09:00Z",
+      "players": 2,
+      "min_players": 2,
+      "max_players": 64,
+      "entry": {
+       "min_games": 0,
+       "rating_min": 0,
+       "rating_max": 0
+      },
+      "allow_bots": true,
+      "berserk": false,
+      "season_id": "",
+      "created_at": "2026-11-30T10:00:00Z",
+      "finished_at": null,
+      "winner": null
+     }
+    ]
+   }
+  }
+ }
+}

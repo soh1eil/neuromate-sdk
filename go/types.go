@@ -109,6 +109,8 @@ type Position struct {
 	ClaimableDraws  []string    `json:"claimable_draws"`
 	Result          *Result     `json:"result"`
 	Next            string      `json:"next"`
+	// Tournament is set when this game belongs to a tournament.
+	Tournament *TournamentRef `json:"tournament,omitempty"`
 
 	// Text is the server's full text rendering, handy for LLM prompts.
 	Text string `json:"-"`
@@ -148,6 +150,38 @@ type Event struct {
 	Type string         `json:"type"`
 	At   string         `json:"at"`
 	Data map[string]any `json:"data"`
+}
+
+// UnmarshalJSON accepts tournament events whose fields are flat (next to type) as well as nested under data.
+func (e *Event) UnmarshalJSON(b []byte) error {
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(b, &raw); err != nil {
+		return err
+	}
+	*e = Event{}
+	for k, v := range raw {
+		switch k {
+		case "seq":
+			_ = json.Unmarshal(v, &e.Seq)
+		case "type":
+			_ = json.Unmarshal(v, &e.Type)
+		case "at":
+			_ = json.Unmarshal(v, &e.At)
+		}
+	}
+	if d, ok := raw["data"]; ok {
+		_ = json.Unmarshal(d, &e.Data)
+	} else {
+		e.Data = map[string]any{}
+		for k, v := range raw {
+			if k != "seq" && k != "type" && k != "at" {
+				var x any
+				_ = json.Unmarshal(v, &x)
+				e.Data[k] = x
+			}
+		}
+	}
+	return nil
 }
 
 // Agent is an agent identity.

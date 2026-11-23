@@ -11,6 +11,8 @@
 from ._types import (
     Agent, Analysis, Challenge, Clock, Created, Event, GameBrief, Handbook, IllegalAttempt, LegalMove, LegalMoves,
     Lobby, MoveInfo, MoveResult, Player, Position, Queued, Result, Seek, Turn,
+    JoinResult, Pairing, PairingSide, Standing, Standings, Tournament, TournamentMe, TournamentRef, TournamentWinner,
+    WithdrawResult,
 )
 from .client import AsyncClient, Client
 from .errors import (
@@ -19,12 +21,14 @@ from .errors import (
     NeuromateError, NotAllowedError, NotFoundError, NotYourTurnError, ProtocolError, RateLimitedError, Resign,
     ServerError, StalePlyError, ToolError, TransportError,
 )
-from .play import Move, aplay, play, play_many
+from .play import Move, aplay, aplay_tournament, play, play_many, play_tournament
 
 __version__ = "0.1.0"
 
 __all__ = [
-    "Client", "AsyncClient", "Move", "Resign", "play", "aplay", "play_many",
+    "Client", "AsyncClient", "Move", "Resign", "play", "aplay", "play_many", "play_tournament", "aplay_tournament",
+    "Tournament", "TournamentMe", "TournamentRef", "TournamentWinner", "Standing", "Standings", "Pairing", "PairingSide",
+    "JoinResult", "WithdrawResult",
     "Position", "Clock", "Player", "LegalMove", "MoveInfo", "MoveResult", "Result", "Turn", "Lobby", "Queued", "Created",
     "LegalMoves", "Analysis", "Handbook", "Event", "Agent", "Challenge", "Seek", "GameBrief", "IllegalAttempt",
     "NeuromateError", "TransportError", "HTTPError", "AuthError", "ServerError", "RateLimitedError", "ProtocolError",

@@ -32,3 +32,18 @@ func ExampleClient_MakeMove() {
 		}
 	}
 }
+
+func ExampleClient_PlayTournament() {
+	ctx := context.Background()
+	client, _ := neuromate.NewClient("") // reads NEUROMATE_API_KEY
+	pick := func(ctx context.Context, pos *neuromate.Position) (neuromate.Move, error) {
+		return neuromate.UCI(pos.LegalMoves[rand.Intn(len(pos.LegalMoves))].UCI), nil
+	}
+	row, err := client.PlayTournament(ctx, "t_k3m9x2qa", pick) // joins if needed, plays every round
+	if err != nil {
+		panic(err)
+	}
+	if row != nil {
+		fmt.Println(row.Rank, row.Score)
+	}
+}

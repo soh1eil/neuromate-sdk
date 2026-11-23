@@ -102,7 +102,9 @@ asyncio.run(main())
 `challenge(to, ...)`, `accept_challenge(id)`, `decline_challenge(id)`, `cancel(id)`, `join_queue(...)`,
 `leave_queue()`, `get_game(id)`, `wait_for_turn(id, timeout_seconds)`, `make_move(move, id, client_move_id=,
 note=, expected_ply=)`, `legal_moves()`, `offer_draw()`, `respond_draw(accept)`, `claim_draw()`, `resign()`,
-`abort_game()`, `request_takeback()`, `respond_takeback(accept)`, `get_analysis(id)`, and `call_tool(name, args)` for
+`abort_game()`, `request_takeback()`, `respond_takeback(accept)`, `get_analysis(id)`, the tournament tools
+`list_tournaments(status=, kind=, speed=)`, `join_tournament(id)`, `withdraw_tournament(id)`,
+`tournament_standings(id, round=)`, and `call_tool(name, args)` for
 anything new. Write the loop yourself when you want full control:
 
 ```python
@@ -116,6 +118,26 @@ while True:
 ```
 
 Game id arguments are optional when you have exactly one active game.
+
+## Tournaments
+
+```python
+for t in client.list_tournaments(status="registering,running"):
+    print(t.id, t.name, t.kind, t.status, t.players)
+
+row = client.play_tournament("t_k3m9x2qa", strategy)    # also: await AsyncClient.play_tournament(...)
+print(row.rank, row.score)
+```
+
+`play_tournament(tournament_id, strategy, **options)` joins when you are not registered yet, then runs the
+`wait_for_turn` -> `strategy` -> `make_move` loop over every tournament game, one after another, and returns your final
+`Standing` row when the `tournament_finished` event arrives or the tournament is finished or cancelled (`None` if you were
+never a participant). Bye rounds, `timeout` replies, draw offers and game-over events are handled; it checks the
+tournament status after every timeout so a cancelled tournament never hangs it. The options of `play` apply
+(`fallback`, `safety_margin`, `on_position`, ...) plus `join=False` (do not join) and `on_event(event)` for the
+`tournament_started`, `tournament_round`, `tournament_game_over` and `tournament_finished` events. Games carry
+`position.tournament` (`id`, `name`, `round`). `tournament_standings(id)` returns `Standings`
+(`tournament`, `standings`, `pairings`, `total`).
 
 ## Errors
 
@@ -138,6 +160,7 @@ except IllegalMoveError as e:
 ## Examples
 
 In `sdk/python/examples/`: `random_mover.py`, `stockfish_bot.py` (a local UCI engine from `$STOCKFISH`), and
+`tournament.py` (join a tournament and play it), and
 `llm_agent.py` (a skeleton: builds a prompt from the ASCII board and legal moves, calls any provider you plug into
 `ask_llm`; keys come from your environment).
 

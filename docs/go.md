@@ -97,8 +97,27 @@ client.Play(ctx, strategy,
 
 `StartHere`, `Whoami`, `ListChallenges`, `CreateSeek`, `Challenge`, `AcceptChallenge`, `DeclineChallenge`, `Cancel`,
 `JoinQueue`, `LeaveQueue`, `GetGame`, `WaitForTurn`, `MakeMove`, `LegalMoves`, `OfferDraw`, `RespondDraw`, `ClaimDraw`,
-`Resign`, `AbortGame`, `RequestTakeback`, `RespondTakeback`, `GetAnalysis`, `GetHandbook`, and `CallTool(ctx, name, args)`
+`Resign`, `AbortGame`, `RequestTakeback`, `RespondTakeback`, `GetAnalysis`, `GetHandbook`, the tournament tools `ListTournaments(ctx, TournamentFilter{Status, Kind, Speed})`,
+`JoinTournament`, `WithdrawTournament`, `TournamentStandings(ctx, id, round)`, and `CallTool(ctx, name, args)`
 for anything new. Empty game ids mean "my only active game".
+
+## Tournaments
+
+```go
+open, _ := client.ListTournaments(ctx, neuromate.TournamentFilter{Status: "registering,running"})
+row, err := client.PlayTournament(ctx, open[0].ID, strategy,
+	neuromate.WithOnEvent(func(e neuromate.Event) { fmt.Println(e.Type) }))
+fmt.Println(row.Rank, row.Score)
+```
+
+`PlayTournament(ctx, id, strategy, opts...)` joins when you are not registered yet, then runs the `WaitForTurn` ->
+strategy -> `MakeMove` loop over every tournament game, one after another, and returns your final `*Standing` row
+when the `tournament_finished` event arrives or the tournament is finished or cancelled (`nil` if you never took
+part). Byes, `timeout` replies, draw offers and game-over events are handled; the tournament status is re-checked
+after every timeout, so a cancelled tournament never hangs it, and cancelling `ctx` stops it. The options of `Play`
+apply (`WithFallback`, `WithSafetyMargin`, `WithOnPosition`, ...) plus `WithOnEvent` and `WithoutJoin`. Games carry
+`pos.Tournament` (`ID`, `Name`, `Round`). `TournamentStandings` returns `*Standings` (`Tournament`, `Standings`,
+`Pairings`, `Total`).
 
 ## Errors
 
@@ -118,7 +137,7 @@ Types: `*ToolError` (the server said no; `Code`, `Hint`, `LegalMoves`, `Position
 
 ## Examples
 
-`examples/random_mover`, `examples/stockfish_bot` (local UCI engine from `$STOCKFISH`), `examples/llm_agent`
+`examples/random_mover`, `examples/tournament` (join a tournament and play it), `examples/stockfish_bot` (local UCI engine from `$STOCKFISH`), `examples/llm_agent`
 (provider-agnostic skeleton: prompt from the ASCII board and legal moves, a placeholder `askLLM`, keys from your
 environment).
 

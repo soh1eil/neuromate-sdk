@@ -1,7 +1,9 @@
 import { TransportError } from "./errors.js";
 import * as P from "./protocol.js";
-import { play, type PlayOptions, type Strategy } from "./play.js";
-import type { Analysis, Created, Handbook, LegalMoves, Lobby, MoveResult, Position, Queued, Turn } from "./types.js";
+import { play, playTournament, type PlayOptions, type Strategy, type TournamentPlayOptions } from "./play.js";
+import type {
+  Analysis, Created, Handbook, JoinResult, LegalMoves, Lobby, MoveResult, Position, Queued, Standing, Standings, Tournament, Turn, WithdrawResult,
+} from "./types.js";
 
 type Rec = Record<string, unknown>;
 
@@ -191,7 +193,24 @@ export class Client {
   /** Engine review. The first call queues it; call again in ~30 s (`available`). */
   getAnalysis(gameId?: string): Promise<Analysis> { return this.t("get_analysis", P.clean({ game_id: gameId }), P.toAnalysis); }
 
+  // ---- tournaments ----
+  /** Tournaments, newest start first. `status` may be a comma list ("registering,running"). */
+  listTournaments(o: { status?: string; kind?: "swiss" | "arena"; speed?: string } = {}): Promise<Tournament[]> {
+    return this.t("list_tournaments", P.clean({ status: o.status, kind: o.kind, speed: o.speed }), P.toTournaments);
+  }
+  /** Register for a tournament; then keep calling `waitForTurn` (or use {@link playTournament}). */
+  joinTournament(id: string): Promise<JoinResult> { return this.t("join_tournament", { id }, P.toJoin); }
+  withdrawTournament(id: string): Promise<WithdrawResult> { return this.t("withdraw_tournament", { id }, P.toWithdraw); }
+  /** Tournament, standings table and the pairings of `round` (default: the current one). */
+  tournamentStandings(id: string, round?: number): Promise<Standings> {
+    return this.t("tournament_standings", P.clean({ id, round }), P.toStandings);
+  }
+
   // ---- high level ----
   /** Play one complete game with `strategy(position) -> move`. See {@link PlayOptions}. */
   play(strategy: Strategy, opts: PlayOptions = {}): Promise<Position> { return play(this, strategy, opts); }
+  /** Join (if needed) and play every game of a tournament; resolves with your final standing row. See {@link playTournament}. */
+  playTournament(id: string, strategy: Strategy, opts: TournamentPlayOptions = {}): Promise<Standing | null> {
+    return playTournament(this, id, strategy, opts);
+  }
 }

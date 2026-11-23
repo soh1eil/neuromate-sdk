@@ -36,6 +36,9 @@ export interface Clock {
   secondsForThisMove(): number | null;
 }
 
+/** The tournament a game belongs to. */
+export interface TournamentRef { id: string; name: string; round: number }
+
 export interface Result { score: string; winner: string; termination: string; text: string }
 export interface IllegalAttempt { move: string; error: string }
 
@@ -68,6 +71,8 @@ export interface Position {
   /** The server's full text rendering, handy for LLM prompts. */
   text: string;
   illegalAttempts: IllegalAttempt[];
+  /** Set when this game belongs to a tournament. */
+  tournament: TournamentRef | null;
   /** performance.now()-based instant (ms) when this position was received. */
   receivedAt: number;
   color: string;
@@ -167,7 +172,7 @@ export function parsePosition(d: Rec, text = ""): Position {
     drawOffer: s(d, "draw_offer"), takebackRequest: s(d, "takeback_request"),
     claimableDraws: Array.isArray(d["claimable_draws"]) ? (d["claimable_draws"] as unknown[]).map(String) : [],
     result: r && Object.keys(r).length ? { score: s(r, "score"), winner: s(r, "winner"), termination: s(r, "termination"), text: s(r, "text") } : null,
-    next: s(d, "next"), text, illegalAttempts: [], receivedAt, color: you.color,
+    next: s(d, "next"), text, illegalAttempts: [], tournament: parseTournamentRef(d["tournament"]), receivedAt, color: you.color,
     isOver: status === "finished" || status === "aborted",
     legalUci: legalMoves.map((m) => m.uci), legalSan: legalMoves.map((m) => m.san),
     deadline: budget === null ? null : receivedAt + budget * 1000, raw: d,
@@ -175,7 +180,14 @@ export function parsePosition(d: Rec, text = ""): Position {
 }
 
 export function parseEvent(d: Rec): Event {
-  return { seq: n(d, "seq"), type: s(d, "type"), data: obj(d["data"]) ?? {}, at: s(d, "at") };
+  // tournament events may carry their fields flat instead of under `data`
+  const flat = Object.fromEntries(Object.entries(d).filter(([k]) => !["seq", "type", "at", "data"].includes(k)));
+  return { seq: n(d, "seq"), type: s(d, "type"), data: obj(d["data"]) ?? flat, at: s(d, "at") };
+}
+
+export function parseTournamentRef(v: unknown): TournamentRef | null {
+  const o = obj(v);
+  return o && Object.keys(o).length ? { id: s(o, "id"), name: s(o, "name"), round: n(o, "round") } : null;
 }
 
 export function parseAgent(d: unknown): Agent {
@@ -206,5 +218,149 @@ export function parseLobby(d: Rec, text = ""): Lobby {
     events: arr(d["events"]).map(parseEvent),
     inQueue: !!d["in_queue"], next: s(d, "next"), you: parseAgent(d["you"]),
     tools: Array.isArray(d["tools"]) ? (d["tools"] as unknown[]).map(String) : [], text,
+  };
+}
+
+// ---- tournaments ----
+
+const f = (d: Rec | null | undefined, k: string): number => {
+  const v = d?.[k];
+  return typeof v === "number" ? v : 0;
+};
+
+/** Your own membership of a tournament (only present for a signed-in caller). */
+export interface TournamentMe { joined: boolean; /** active, paused or withdrawn. */ status: string; rank: number; score: number }
+export interface TournamentWinner { name: string; kind: string; modelLabel: string; agentId: string }
+
+/** A swiss or arena tournament. `status`: scheduled, registering, running, finished or cancelled. */
+export interface Tournament {
+  id: string;
+  name: string;
+  /** swiss or arena. */
+  kind: string;
+  status: string;
+  variant: string;
+  timeControl: Rec;
+  timeControlLabel: string;
+  speed: string;
+  pool: string;
+  rated: boolean;
+  startsAt: string;
+  endsAt: string;
+  durationSeconds: number;
+  rounds: number;
+  round: number;
+  nextRoundAt: string;
+  players: number;
+  minPlayers: number;
+  maxPlayers: number;
+  entry: Rec;
+  allowBots: boolean;
+  berserk: boolean;
+  seasonId: string;
+  createdAt: string;
+  finishedAt: string;
+  winner: TournamentWinner | null;
+  me: TournamentMe | null;
+  /** finished or cancelled. */
+  isOver: boolean;
+  /** You are registered and not withdrawn. */
+  joined: boolean;
+  raw: Rec;
+}
+
+/** One row of the standings table. */
+export interface Standing {
+  rank: number;
+  name: string;
+  kind: string;
+  modelLabel: string;
+  agentId: string;
+  botId: string;
+  rating: number;
+  score: number;
+  games: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  byes: number;
+  /** buchholz, sonneborn_berger. */
+  tiebreaks: Record<string, number>;
+  streak: number;
+  berserks: number;
+  /** active, paused or withdrawn. */
+  status: string;
+  isFiller: boolean;
+  /** The game being played now. */
+  gameId: string;
+  performance: number;
+}
+
+export interface PairingSide { name: string; kind: string; modelLabel: string; agentId: string; rating: number }
+
+/** One board of a round (swiss) or one game (arena); `black` is null for a bye. */
+export interface Pairing {
+  round: number;
+  board: number;
+  white: PairingSide | null;
+  black: PairingSide | null;
+  gameId: string;
+  /** playing, done or bye. */
+  status: string;
+  result: string;
+  points: [number, number];
+  berserk: [boolean, boolean];
+  termination: string;
+  isBye: boolean;
+}
+
+/** Result of `tournamentStandings`. */
+export interface Standings { tournament: Tournament; standings: Standing[]; pairings: Pairing[]; total: number; text: string }
+export interface JoinResult { tournament: Tournament; joined: boolean; next: string; text: string }
+export interface WithdrawResult { tournament: Tournament; withdrawn: boolean; text: string }
+
+export function parseTournament(d: Rec): Tournament {
+  const me = obj(d["me"]);
+  const w = obj(d["winner"]);
+  const status = s(d, "status");
+  const mine: TournamentMe | null = me ? { joined: !!me["joined"], status: s(me, "status"), rank: n(me, "rank"), score: f(me, "score") } : null;
+  return {
+    id: s(d, "id"), name: s(d, "name"), kind: s(d, "kind"), status, variant: s(d, "variant"), timeControl: obj(d["time_control"]) ?? {},
+    timeControlLabel: s(d, "time_control_label"), speed: s(d, "speed"), pool: s(d, "pool"), rated: !!d["rated"],
+    startsAt: s(d, "starts_at"), endsAt: s(d, "ends_at"), durationSeconds: n(d, "duration_seconds"), rounds: n(d, "rounds"),
+    round: n(d, "round"), nextRoundAt: s(d, "next_round_at"), players: n(d, "players"), minPlayers: n(d, "min_players"),
+    maxPlayers: n(d, "max_players"), entry: obj(d["entry"]) ?? {}, allowBots: !!d["allow_bots"], berserk: !!d["berserk"],
+    seasonId: s(d, "season_id"), createdAt: s(d, "created_at"), finishedAt: s(d, "finished_at"),
+    winner: w && Object.keys(w).length ? { name: s(w, "name"), kind: s(w, "kind"), modelLabel: s(w, "model_label"), agentId: s(w, "agent_id") } : null,
+    me: mine, isOver: status === "finished" || status === "cancelled", joined: !!mine && mine.joined && mine.status !== "withdrawn", raw: d,
+  };
+}
+
+export function parseStanding(d: Rec): Standing {
+  const tb = obj(d["tiebreaks"]) ?? {};
+  return {
+    rank: n(d, "rank"), name: s(d, "name"), kind: s(d, "kind"), modelLabel: s(d, "model_label"), agentId: s(d, "agent_id"),
+    botId: s(d, "bot_id"), rating: f(d, "rating"), score: f(d, "score"), games: n(d, "games"), wins: n(d, "wins"), draws: n(d, "draws"),
+    losses: n(d, "losses"), byes: n(d, "byes"),
+    tiebreaks: Object.fromEntries(Object.entries(tb).filter(([, v]) => typeof v === "number")) as Record<string, number>,
+    streak: n(d, "streak"), berserks: n(d, "berserks"), status: s(d, "status"), isFiller: !!d["is_filler"], gameId: s(d, "game_id"),
+    performance: f(d, "performance"),
+  };
+}
+
+function parseSide(v: unknown): PairingSide | null {
+  const o = obj(v);
+  return o ? { name: s(o, "name"), kind: s(o, "kind"), modelLabel: s(o, "model_label"), agentId: s(o, "agent_id"), rating: f(o, "rating") } : null;
+}
+
+export function parsePairing(d: Rec): Pairing {
+  const pts = Array.isArray(d["points"]) ? (d["points"] as unknown[]) : [];
+  const bz = Array.isArray(d["berserk"]) ? (d["berserk"] as unknown[]) : [];
+  const black = parseSide(d["black"]);
+  const status = s(d, "status");
+  return {
+    round: n(d, "round"), board: n(d, "board"), white: parseSide(d["white"]), black, gameId: s(d, "game_id"), status, result: s(d, "result"),
+    points: [Number(pts[0] ?? 0) || 0, Number(pts[1] ?? 0) || 0], berserk: [!!bz[0], !!bz[1]], termination: s(d, "termination"),
+    isBye: status === "bye" || black === null,
   };
 }

@@ -33,6 +33,8 @@ type playConfig struct {
 	onPosition                                   func(*Position)
 	onDraw                                       func(*Position) bool
 	findTimeout                                  time.Duration
+	onEvent                                      func(Event)
+	noJoin                                       bool
 }
 
 // PlayOption configures Play.

@@ -16,9 +16,9 @@ import uuid
 from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Any, Callable, Generator, Union
 
-from ._types import IllegalAttempt, Position
+from ._types import Event, IllegalAttempt, Position, Standing, Standings
 from .errors import (
-    GameOverError, IllegalMoveError, NeuromateError, NotYourTurnError, RateLimitedError, Resign, ServerError,
+    ConflictError, GameOverError, IllegalMoveError, NeuromateError, NotYourTurnError, RateLimitedError, Resign, ServerError,
     StalePlyError, StrategyTimeout, ToolError, TransportError,
 )
 
@@ -55,6 +55,8 @@ class PlayOptions:
     on_draw_offer: Callable[[Position], bool] | None = None
     find_timeout: float | None = None
     max_retries: int = 8
+    on_event: Callable[[Event], None] | None = None  # tournaments: every event wait_for_turn reports
+    join: bool = True  # tournaments: join first when not registered yet
 
 
 def _random_legal(pos: Position) -> str:
@@ -182,6 +184,23 @@ def _machine(o: PlayOptions, state: dict[str, Any]) -> Machine:
             return done
 
 
+def _handle(pos: Position, o: PlayOptions, nonce: str) -> Generator[Effect, Any, Position]:
+    """Answer draw offers and takebacks, then play the move when it is your turn. Returns the latest position."""
+    gid = pos.game_id
+    if pos.draw_offer == "from_opponent":
+        accept = bool(o.on_draw_offer and o.on_draw_offer(pos))
+        pos = yield from _retry(Call("respond_draw", {"accept": accept, "game_id": gid}), o)
+        if pos.is_over:
+            return pos
+    if pos.takeback_request == "from_opponent":
+        pos = yield from _retry(Call("respond_takeback", {"accept": False, "game_id": gid}), o)
+    if pos.your_turn and not pos.is_over:
+        done = yield from _move(pos, o, nonce)
+        if done is not None:
+            return done
+    return pos
+
+
 def _move(pos: Position, o: PlayOptions, nonce: str) -> Generator[Effect, Any, Position | None]:
     """Choose and send one move, surviving illegal moves, stale positions and network trouble."""
     attempts: list[IllegalAttempt] = []
@@ -247,7 +266,11 @@ def play(client: "Client", strategy: Callable[[Position], Any], **options: Any) 
     """
     o = PlayOptions(**options)
     state: dict[str, Any] = {}
-    gen = _machine(o, state)
+    res: Position = _run_sync(client, strategy, _machine(o, state), state)
+    return res
+
+
+def _run_sync(client: Any, strategy: Callable[[Position], Any], gen: Generator[Effect, Any, Any], state: dict[str, Any]) -> Any:
     pool = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="neuromate-think")
     try:
         send: Any = None
@@ -256,7 +279,7 @@ def play(client: "Client", strategy: Callable[[Position], Any], **options: Any) 
             try:
                 eff = gen.throw(exc) if exc else gen.send(send)
             except StopIteration as stop:
-                return stop.value  # type: ignore[no-any-return]
+                return stop.value
             send, exc = None, None
             try:
                 if isinstance(eff, Call):
@@ -294,7 +317,11 @@ async def aplay(client: "AsyncClient", strategy: Callable[[Position], Any], **op
     """Async twin of :func:`play`; ``strategy`` may be a plain function or ``async def``."""
     o = PlayOptions(**options)
     state: dict[str, Any] = {}
-    gen = _machine(o, state)
+    res: Position = await _run_async(client, strategy, _machine(o, state), state)
+    return res
+
+
+async def _run_async(client: Any, strategy: Callable[[Position], Any], gen: Generator[Effect, Any, Any], state: dict[str, Any]) -> Any:
     send: Any = None
     exc: BaseException | None = None
     try:
@@ -302,7 +329,7 @@ async def aplay(client: "AsyncClient", strategy: Callable[[Position], Any], **op
             try:
                 eff = gen.throw(exc) if exc else gen.send(send)
             except StopIteration as stop:
-                return stop.value  # type: ignore[no-any-return]
+                return stop.value
             send, exc = None, None
             try:
                 if isinstance(eff, Call):
@@ -335,6 +362,94 @@ async def _think_async(strategy: Callable[[Position], Any], t: Think) -> Any:
         return await asyncio.wait_for(run(), timeout=t.budget)
     except asyncio.TimeoutError:
         raise StrategyTimeout(f"strategy took longer than {t.budget:.1f}s") from None
+
+
+# ---- tournaments ----
+
+_DONE = ("finished", "cancelled")
+
+
+def _pick_row(st: Standings, you: Any, rank: int | None, score: float | None) -> Standing | None:
+    row = st.find(agent_id=you.agent_id if you and you.agent_id else "", name=you.name if you and you.name else "")
+    if row is None and rank:
+        row = next((r for r in st.standings if r.rank == rank), None)
+    if row is None and st.tournament.me and st.tournament.me.joined:
+        me = st.tournament.me
+        return Standing(rank=rank or me.rank, name=getattr(you, "name", ""), score=me.score if score is None else score,
+                        status=me.status)
+    return row
+
+
+def _final(tid: str, o: PlayOptions, rank: int | None = None, score: float | None = None) -> Generator[Effect, Any, Standing | None]:
+    st: Standings = yield from _retry(Call("tournament_standings", {"id": tid}), o)
+    lobby = yield from _retry(Call("whoami", {}), o)
+    return _pick_row(st, lobby.you, rank, score)
+
+
+def _tmachine(tid: str, o: PlayOptions) -> Generator[Effect, Any, Standing | None]:
+    nonce = uuid.uuid4().hex[:6]
+    st: Standings = yield from _retry(Call("tournament_standings", {"id": tid}), o)
+    if st.tournament.status in _DONE:
+        return (yield from _final(tid, o))
+    if o.join and not st.tournament.joined:
+        try:
+            yield from _retry(Call("join_tournament", {"id": tid}), o)
+        except ConflictError:  # already joined (or a race): carry on only when we really are in
+            st = yield from _retry(Call("tournament_standings", {"id": tid}), o)
+            if not st.tournament.joined:
+                raise
+    while True:
+        turn = yield from _retry(Call("wait_for_turn", {"timeout_seconds": o.wait_seconds}), o)
+        ended: Event | None = None
+        check = turn.timed_out
+        for ev in turn.events:
+            if o.on_event:
+                o.on_event(ev)
+            if ev.data.get("tournament_id", tid) != tid:
+                continue
+            if ev.type in ("tournament_finished", "tournament_cancelled"):
+                ended = ev
+            elif ev.type == "tournament_game_over":
+                check = True
+        pos = turn.position
+        busy = False
+        if pos is not None and (pos.tournament is None or pos.tournament.id == tid):
+            if o.on_position:
+                o.on_position(pos)
+            if not pos.is_over:
+                busy = True
+                yield from _handle(pos, o, nonce)
+        if ended is not None:
+            rank = ended.data.get("rank")
+            score = ended.data.get("score")
+            return (yield from _final(tid, o, int(rank) if isinstance(rank, (int, float)) else None,
+                                      float(score) if isinstance(score, (int, float)) else None))
+        if check:  # nothing happened for a while or a game ended: is the tournament still alive?
+            st = yield from _retry(Call("tournament_standings", {"id": tid}), o)
+            if st.tournament.status in _DONE:
+                return (yield from _final(tid, o))
+        elif not turn.events and not busy:
+            yield Sleep(0.2)  # never spin if the server answers at once without news
+
+
+def play_tournament(client: "Client", tournament_id: str, strategy: Callable[[Position], Any], **options: Any) -> Standing | None:
+    """Join a tournament (when not joined yet) and play all its games, one after another.
+
+    Runs ``wait_for_turn`` -> ``strategy`` -> ``make_move`` like :func:`play` until the
+    ``tournament_finished`` event arrives or the tournament is finished/cancelled, and returns your final
+    :class:`Standing` row (``rank``, ``score``; ``None`` when you never took part). Bye rounds and
+    ``timeout`` replies are handled. Options as for :func:`play`, plus ``join`` (default True) and
+    ``on_event`` (``Event -> None``).
+    """
+    o = PlayOptions(**options)
+    return _run_sync(client, strategy, _tmachine(tournament_id, o), {})  # type: ignore[no-any-return]
+
+
+async def aplay_tournament(client: "AsyncClient", tournament_id: str, strategy: Callable[[Position], Any],
+                           **options: Any) -> Standing | None:
+    """Async twin of :func:`play_tournament`."""
+    o = PlayOptions(**options)
+    return await _run_async(client, strategy, _tmachine(tournament_id, o), {})  # type: ignore[no-any-return]
 
 
 def play_many(client: "Client", strategy: Callable[[Position], Any], games: int, **options: Any) -> list[Position]:

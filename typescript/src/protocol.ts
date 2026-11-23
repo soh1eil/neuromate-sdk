@@ -4,7 +4,8 @@ import {
 } from "./errors.js";
 import {
   type Analysis, type Created, type Handbook, type LegalMoves, type Lobby, type MoveResult, type Position, type Queued, type Turn,
-  parseEvent, parseLobby, parseMoveInfo, parsePosition,
+  type JoinResult, type Standings, type Tournament, type WithdrawResult,
+  parseEvent, parseLobby, parseMoveInfo, parsePairing, parsePosition, parseStanding, parseTournament,
 } from "./types.js";
 
 type Rec = Record<string, unknown>;
@@ -201,3 +202,27 @@ export function toHandbook(out: ToolOut): Handbook {
 }
 
 export const toText = (out: ToolOut): string => out.text;
+
+// ---- tournaments ----
+
+function tournamentOf(out: ToolOut): Tournament {
+  const t = out.data["tournament"];
+  if (!t || typeof t !== "object") throw new ProtocolError(`${out.tool}: the reply has no tournament:\n${out.text.slice(0, 300)}`);
+  return parseTournament(t as Rec);
+}
+
+export const toTournaments = (out: ToolOut): Tournament[] =>
+  (Array.isArray(out.data["tournaments"]) ? (out.data["tournaments"] as Rec[]) : []).map(parseTournament);
+
+export const toJoin = (out: ToolOut): JoinResult =>
+  ({ tournament: tournamentOf(out), joined: out.data["joined"] !== false, next: String(out.data["next"] ?? ""), text: out.text });
+
+export const toWithdraw = (out: ToolOut): WithdrawResult =>
+  ({ tournament: tournamentOf(out), withdrawn: out.data["withdrawn"] !== false, text: out.text });
+
+export function toStandings(out: ToolOut): Standings {
+  const d = out.data;
+  const standings = (Array.isArray(d["standings"]) ? (d["standings"] as Rec[]) : []).map(parseStanding);
+  const pairings = (Array.isArray(d["pairings"]) ? (d["pairings"] as Rec[]) : []).map(parsePairing);
+  return { tournament: tournamentOf(out), standings, pairings, total: typeof d["total"] === "number" ? d["total"] : standings.length, text: out.text };
+}

@@ -7,7 +7,8 @@ import re
 from typing import Any, Callable, Mapping
 
 from ._types import (
-    Analysis, Created, Handbook, LegalMove, LegalMoves, Lobby, MoveInfo, MoveResult, Position, Queued, Turn, Event,
+    Analysis, Created, Handbook, JoinResult, LegalMove, LegalMoves, Lobby, MoveInfo, MoveResult, Pairing, Position, Queued,
+    Standing, Standings, Tournament, Turn, Event, WithdrawResult,
 )
 from .errors import AuthError, HTTPError, ProtocolError, RateLimitedError, ServerError, tool_error_class
 
@@ -229,3 +230,29 @@ def parse_handbook(out: ToolOut) -> Handbook:
 
 def parse_ack(out: ToolOut) -> str:
     return out.text
+
+
+def _tournament(out: ToolOut) -> Tournament:
+    t = out.data.get("tournament")
+    if not isinstance(t, dict):
+        raise ProtocolError(f"{out.tool}: the reply has no tournament:\n{out.text[:300]}")
+    return Tournament._from(t)
+
+
+def parse_tournaments(out: ToolOut) -> list[Tournament]:
+    return [Tournament._from(t) for t in out.data.get("tournaments") or [] if isinstance(t, dict)]
+
+
+def parse_join(out: ToolOut) -> JoinResult:
+    return JoinResult(_tournament(out), bool(out.data.get("joined", True)), str(out.data.get("next") or ""), out.text)
+
+
+def parse_withdraw(out: ToolOut) -> WithdrawResult:
+    return WithdrawResult(_tournament(out), bool(out.data.get("withdrawn", True)), out.text)
+
+
+def parse_standings(out: ToolOut) -> Standings:
+    d = out.data
+    rows = [Standing._from(r) for r in d.get("standings") or [] if isinstance(r, dict)]
+    return Standings(_tournament(out), rows, [Pairing._from(p) for p in d.get("pairings") or [] if isinstance(p, dict)],
+                     int(d["total"]) if isinstance(d.get("total"), (int, float)) else len(rows), out.text)

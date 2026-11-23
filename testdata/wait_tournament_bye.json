@@ -1,0 +1,40 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+   "name": "wait_for_turn",
+   "arguments": {}
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "ROUND 2: you have a bye (1 point).\n"
+    }
+   ],
+   "structuredContent": {
+    "reason": "",
+    "next": "call wait_for_turn",
+    "events": [
+     {
+      "seq": 2,
+      "type": "tournament_round",
+      "data": {
+       "tournament_id": "t_k3m9x2qa",
+       "round": 2,
+       "bye": true
+      },
+      "at": "2026-12-01T18:00:00Z"
+     }
+    ]
+   }
+  }
+ }
+}

@@ -120,6 +120,21 @@ class IllegalAttempt:
 
 
 @dataclass(frozen=True, slots=True)
+class TournamentRef:
+    """Set on a game that belongs to a tournament."""
+
+    id: str
+    name: str = ""
+    round: int = 0
+
+    @classmethod
+    def _from(cls, d: Mapping[str, Any] | None) -> "TournamentRef | None":
+        if not isinstance(d, Mapping) or not d:
+            return None
+        return cls(_s(d, "id"), _s(d, "name"), _i(d, "round"))
+
+
+@dataclass(frozen=True, slots=True)
 class Position:
     """Everything about a game from your seat. This is what your strategy receives."""
 
@@ -147,6 +162,7 @@ class Position:
     result: Result | None
     next: str
     text: str = ""  # the server's full text rendering, handy for LLM prompts
+    tournament: TournamentRef | None = None  # set when this game is a tournament game
     illegal_attempts: tuple[IllegalAttempt, ...] = ()
     received_at: float = field(default_factory=time.monotonic, compare=False)
     raw: Mapping[str, Any] = field(default_factory=dict, repr=False, compare=False)
@@ -185,7 +201,8 @@ class Position:
             last_move=MoveInfo._from(d.get("last_move")), moves_san=list(d.get("moves_san") or []),
             clock=Clock._from(d.get("clocks")), draw_offer=_s(d, "draw_offer"),
             takeback_request=_s(d, "takeback_request"), claimable_draws=list(d.get("claimable_draws") or []),
-            result=Result._from(d.get("result")), next=_s(d, "next"), text=text, raw=d,
+            result=Result._from(d.get("result")), next=_s(d, "next"), text=text,
+            tournament=TournamentRef._from(d.get("tournament")), raw=d,
         )
 
 
@@ -198,7 +215,10 @@ class Event:
 
     @classmethod
     def _from(cls, d: Mapping[str, Any]) -> "Event":
-        return cls(_i(d, "seq"), _s(d, "type"), d.get("data") or {}, _s(d, "at"))
+        data = d.get("data")
+        if not isinstance(data, Mapping):  # tournament events may carry their fields flat
+            data = {k: v for k, v in d.items() if k not in ("seq", "type", "at", "data")}
+        return cls(_i(d, "seq"), _s(d, "type"), data, _s(d, "at"))
 
 
 @dataclass(frozen=True, slots=True)
@@ -362,3 +382,218 @@ class Handbook:
     text: str
     sections: list[str]
     section: str = ""
+
+
+def _f(d: Mapping[str, Any], k: str) -> float:
+    v = d.get(k)
+    return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else 0.0
+
+
+def _m(d: Mapping[str, Any], k: str) -> Mapping[str, Any]:
+    v = d.get(k)
+    return v if isinstance(v, Mapping) else {}
+
+
+@dataclass(frozen=True, slots=True)
+class TournamentMe:
+    """Your own membership (only present for a signed-in caller)."""
+
+    joined: bool = False
+    status: str = ""  # active, paused, withdrawn
+    rank: int = 0
+    score: float = 0.0
+
+    @classmethod
+    def _from(cls, d: Mapping[str, Any] | None) -> "TournamentMe | None":
+        if not isinstance(d, Mapping):
+            return None
+        return cls(bool(d.get("joined")), _s(d, "status"), _i(d, "rank"), _f(d, "score"))
+
+
+@dataclass(frozen=True, slots=True)
+class TournamentWinner:
+    name: str = ""
+    kind: str = ""
+    model_label: str = ""
+    agent_id: str = ""
+
+    @classmethod
+    def _from(cls, d: Mapping[str, Any] | None) -> "TournamentWinner | None":
+        if not isinstance(d, Mapping) or not d:
+            return None
+        return cls(_s(d, "name"), _s(d, "kind"), _s(d, "model_label"), _s(d, "agent_id"))
+
+
+@dataclass(frozen=True, slots=True)
+class Tournament:
+    """A tournament (swiss or arena). ``status``: scheduled, registering, running, finished, cancelled."""
+
+    id: str
+    name: str = ""
+    kind: str = ""  # swiss, arena
+    status: str = ""
+    variant: str = ""
+    time_control: Mapping[str, Any] = field(default_factory=dict)
+    time_control_label: str = ""
+    speed: str = ""
+    pool: str = ""
+    rated: bool = False
+    starts_at: str = ""
+    ends_at: str = ""
+    duration_seconds: int = 0
+    rounds: int = 0
+    round: int = 0
+    next_round_at: str = ""
+    players: int = 0
+    min_players: int = 0
+    max_players: int = 0
+    entry: Mapping[str, Any] = field(default_factory=dict)
+    allow_bots: bool = False
+    berserk: bool = False
+    season_id: str = ""
+    created_at: str = ""
+    finished_at: str = ""
+    winner: TournamentWinner | None = None
+    me: TournamentMe | None = None
+    raw: Mapping[str, Any] = field(default_factory=dict, repr=False, compare=False)
+
+    @property
+    def is_over(self) -> bool:
+        return self.status in ("finished", "cancelled")
+
+    @property
+    def joined(self) -> bool:
+        return bool(self.me and self.me.joined and self.me.status != "withdrawn")
+
+    @classmethod
+    def _from(cls, d: Mapping[str, Any]) -> "Tournament":
+        return cls(
+            id=_s(d, "id"), name=_s(d, "name"), kind=_s(d, "kind"), status=_s(d, "status"), variant=_s(d, "variant"),
+            time_control=_m(d, "time_control"),
+            time_control_label=_s(d, "time_control_label"), speed=_s(d, "speed"), pool=_s(d, "pool"),
+            rated=bool(d.get("rated")), starts_at=_s(d, "starts_at"), ends_at=_s(d, "ends_at"),
+            duration_seconds=_i(d, "duration_seconds"), rounds=_i(d, "rounds"), round=_i(d, "round"),
+            next_round_at=_s(d, "next_round_at"), players=_i(d, "players"), min_players=_i(d, "min_players"),
+            max_players=_i(d, "max_players"), entry=_m(d, "entry"),
+            allow_bots=bool(d.get("allow_bots")), berserk=bool(d.get("berserk")), season_id=_s(d, "season_id"),
+            created_at=_s(d, "created_at"), finished_at=_s(d, "finished_at"),
+            winner=TournamentWinner._from(d.get("winner")), me=TournamentMe._from(d.get("me")), raw=d,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class Standing:
+    """One row of the standings table."""
+
+    rank: int = 0
+    name: str = ""
+    kind: str = ""
+    model_label: str = ""
+    agent_id: str = ""
+    bot_id: str = ""
+    rating: float = 0.0
+    score: float = 0.0
+    games: int = 0
+    wins: int = 0
+    draws: int = 0
+    losses: int = 0
+    byes: int = 0
+    tiebreaks: Mapping[str, float] = field(default_factory=dict)  # buchholz, sonneborn_berger
+    streak: int = 0
+    berserks: int = 0
+    status: str = ""  # active, paused, withdrawn
+    is_filler: bool = False
+    game_id: str = ""  # the game being played now
+    performance: float = 0.0
+
+    @classmethod
+    def _from(cls, d: Mapping[str, Any]) -> "Standing":
+        tb = d.get("tiebreaks")
+        return cls(
+            _i(d, "rank"), _s(d, "name"), _s(d, "kind"), _s(d, "model_label"), _s(d, "agent_id"), _s(d, "bot_id"),
+            _f(d, "rating"), _f(d, "score"), _i(d, "games"), _i(d, "wins"), _i(d, "draws"), _i(d, "losses"),
+            _i(d, "byes"), {str(k): float(v) for k, v in tb.items() if isinstance(v, (int, float))} if isinstance(tb, Mapping) else {},
+            _i(d, "streak"), _i(d, "berserks"), _s(d, "status"), bool(d.get("is_filler")), _s(d, "game_id"),
+            _f(d, "performance"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class PairingSide:
+    name: str = ""
+    kind: str = ""
+    model_label: str = ""
+    agent_id: str = ""
+    rating: float = 0.0
+
+    @classmethod
+    def _from(cls, d: Mapping[str, Any] | None) -> "PairingSide | None":
+        if not isinstance(d, Mapping):
+            return None
+        return cls(_s(d, "name"), _s(d, "kind"), _s(d, "model_label"), _s(d, "agent_id"), _f(d, "rating"))
+
+
+@dataclass(frozen=True, slots=True)
+class Pairing:
+    """One board of a round (swiss) or one game (arena). ``black`` is None for a bye."""
+
+    round: int = 0
+    board: int = 0
+    white: PairingSide | None = None
+    black: PairingSide | None = None
+    game_id: str = ""
+    status: str = ""  # playing, done, bye
+    result: str = ""
+    points: tuple[float, float] = (0.0, 0.0)
+    berserk: tuple[bool, bool] = (False, False)
+    termination: str = ""
+
+    @property
+    def is_bye(self) -> bool:
+        return self.status == "bye" or self.black is None
+
+    @classmethod
+    def _from(cls, d: Mapping[str, Any]) -> "Pairing":
+        pts = list(d.get("points") or [0, 0]) + [0, 0]
+        bz = list(d.get("berserk") or [False, False]) + [False, False]
+        return cls(
+            _i(d, "round"), _i(d, "board"), PairingSide._from(d.get("white")), PairingSide._from(d.get("black")),
+            _s(d, "game_id"), _s(d, "status"), _s(d, "result"), (float(pts[0] or 0), float(pts[1] or 0)),
+            (bool(bz[0]), bool(bz[1])), _s(d, "termination"),
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class Standings:
+    """Result of ``tournament_standings``."""
+
+    tournament: Tournament
+    standings: list[Standing]
+    pairings: list[Pairing]
+    total: int = 0
+    text: str = ""
+
+    def find(self, *, name: str = "", agent_id: str = "") -> Standing | None:
+        for row in self.standings:
+            if (agent_id and row.agent_id == agent_id) or (name and row.name == name):
+                return row
+        return None
+
+
+@dataclass(frozen=True, slots=True)
+class JoinResult:
+    """Result of ``join_tournament``."""
+
+    tournament: Tournament
+    joined: bool = True
+    next: str = ""
+    text: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class WithdrawResult:
+    """Result of ``withdraw_tournament``."""
+
+    tournament: Tournament
+    withdrawn: bool = True
+    text: str = ""

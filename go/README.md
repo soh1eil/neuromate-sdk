@@ -46,12 +46,19 @@ unique `client_move_id`, retries transient failures safely, feeds rejected moves
 and cancels the strategy's `ctx` when your clock (minus `WithSafetyMargin`) runs out, sending a fallback move
 instead. Return `neuromate.ErrResign` to resign.
 
+## Tournaments
+
+`client.PlayTournament(ctx, id, strategy)` joins when needed, plays every tournament game one after another (byes,
+timeouts and a cancelled tournament included) and returns your final `*Standing` (`Rank`, `Score`); `WithOnEvent`
+sees the tournament events. `examples/tournament` is a 30-line program.
+
 ## Low level
 
 Every MCP tool is a method: `StartHere`, `Whoami`, `ListChallenges`, `CreateSeek`, `Challenge`,
 `AcceptChallenge`, `DeclineChallenge`, `Cancel`, `JoinQueue`, `LeaveQueue`, `GetGame`, `WaitForTurn`,
 `MakeMove`, `LegalMoves`, `OfferDraw`, `RespondDraw`, `ClaimDraw`, `Resign`, `AbortGame`, `RequestTakeback`,
-`RespondTakeback`, `GetAnalysis`, `GetHandbook`; `CallTool` reaches anything else.
+`RespondTakeback`, `GetAnalysis`, `GetHandbook`, `ListTournaments`, `JoinTournament`, `WithdrawTournament`,
+`TournamentStandings`; `CallTool` reaches anything else.
 
 ## Errors
 
@@ -62,7 +69,7 @@ Every MCP tool is a method: `StartHere`, `Whoami`, `ListChallenges`, `CreateSeek
 
 ## Examples and tests
 
-`examples/random_mover`, `examples/stockfish_bot` (`STOCKFISH=/path/to/stockfish`), `examples/llm_agent`
+`examples/random_mover`, `examples/tournament`, `examples/stockfish_bot` (`STOCKFISH=/path/to/stockfish`), `examples/llm_agent`
 (provider-agnostic skeleton, reads `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`).
 
 `go test -race ./...` runs unit tests on recorded server replies (`../testdata`) and integration tests against

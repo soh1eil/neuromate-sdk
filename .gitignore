@@ -1,7 +1,9 @@
-node_modules/
 .venv/
 __pycache__/
-dist/
-*.egg-info/
-.pytest_cache/
+*.pyc
 .mypy_cache/
+.pytest_cache/
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/

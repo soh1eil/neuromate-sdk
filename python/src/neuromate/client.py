@@ -9,7 +9,10 @@ from typing import Any, Callable, Mapping, TypeVar
 import httpx
 
 from . import _protocol as P
-from ._types import Analysis, Created, Handbook, LegalMoves, Lobby, MoveResult, Position, Queued, Turn
+from ._types import (
+    Analysis, Created, Handbook, JoinResult, LegalMoves, Lobby, MoveResult, Position, Queued, Standing, Standings,
+    Tournament, Turn, WithdrawResult,
+)
 from .errors import TransportError
 
 T = TypeVar("T")
@@ -233,6 +236,23 @@ class Client(_Common):
         """Engine review. The first call queues it; call again in ~30 s (``Analysis.available``)."""
         return self._t("get_analysis", P.clean(game_id=game_id), P.parse_analysis)
 
+    # ---- tournaments ----
+
+    def list_tournaments(self, *, status: str | None = None, kind: str | None = None, speed: str | None = None) -> list[Tournament]:
+        """Tournaments, newest start first. ``status`` may be a comma list (``"registering,running"``)."""
+        return self._t("list_tournaments", P.clean(status=status, kind=kind, speed=speed), P.parse_tournaments)
+
+    def join_tournament(self, id: str) -> JoinResult:
+        """Register for a tournament; then keep calling ``wait_for_turn`` (or use :meth:`play_tournament`)."""
+        return self._t("join_tournament", {"id": id}, P.parse_join)
+
+    def withdraw_tournament(self, id: str) -> WithdrawResult:
+        return self._t("withdraw_tournament", {"id": id}, P.parse_withdraw)
+
+    def tournament_standings(self, id: str, round: int | None = None) -> Standings:
+        """Tournament, standings table and pairings of ``round`` (default: the current one)."""
+        return self._t("tournament_standings", P.clean(id=id, round=round), P.parse_standings)
+
     # ---- high level ----
 
     def play(self, strategy: "Callable[[Position], Any]", **options: Any) -> Position:
@@ -240,6 +260,12 @@ class Client(_Common):
         from .play import play
 
         return play(self, strategy, **options)
+
+    def play_tournament(self, tournament_id: str, strategy: "Callable[[Position], Any]", **options: Any) -> Standing | None:
+        """Join (if needed) and play every game of a tournament; see :func:`neuromate.play.play_tournament`."""
+        from .play import play_tournament
+
+        return play_tournament(self, tournament_id, strategy, **options)
 
 
 class AsyncClient(_Common):
@@ -383,6 +409,22 @@ class AsyncClient(_Common):
     async def get_analysis(self, game_id: str | None = None) -> Analysis:
         return await self._t("get_analysis", P.clean(game_id=game_id), P.parse_analysis)
 
+    async def list_tournaments(self, *, status: str | None = None, kind: str | None = None, speed: str | None = None) -> list[Tournament]:
+        """Tournaments, newest start first. ``status`` may be a comma list (``"registering,running"``)."""
+        return await self._t("list_tournaments", P.clean(status=status, kind=kind, speed=speed), P.parse_tournaments)
+
+    async def join_tournament(self, id: str) -> JoinResult:
+        """Register for a tournament; then keep calling ``wait_for_turn`` (or use :meth:`play_tournament`)."""
+        return await self._t("join_tournament", {"id": id}, P.parse_join)
+
+    async def withdraw_tournament(self, id: str) -> WithdrawResult:
+        return await self._t("withdraw_tournament", {"id": id}, P.parse_withdraw)
+
+    async def tournament_standings(self, id: str, round: int | None = None) -> Standings:
+        """Tournament, standings table and pairings of ``round`` (default: the current one)."""
+        return await self._t("tournament_standings", P.clean(id=id, round=round), P.parse_standings)
+
+
     async def play(self, strategy: "Callable[[Position], Any]", **options: Any) -> Position:
         """Async :func:`neuromate.play.play`; ``strategy`` may be sync or ``async def``."""
         from .play import aplay
@@ -390,3 +432,9 @@ class AsyncClient(_Common):
         return await aplay(self, strategy, **options)
 
 
+
+    async def play_tournament(self, tournament_id: str, strategy: "Callable[[Position], Any]", **options: Any) -> Standing | None:
+        """Async :func:`neuromate.play.play_tournament`; ``strategy`` may be sync or ``async def``."""
+        from .play import aplay_tournament
+
+        return await aplay_tournament(self, tournament_id, strategy, **options)
