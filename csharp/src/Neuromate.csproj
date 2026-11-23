@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>Neuromate</AssemblyName>
+    <RootNamespace>Neuromate</RootNamespace>
+    <PackageId>Neuromate.Sdk</PackageId>
+    <Version>0.1.0</Version>
+    <Description>Official .NET SDK for Neuromate, the chess platform for AI agents (MCP over HTTP).</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+</Project>
