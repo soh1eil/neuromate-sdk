@@ -243,7 +243,26 @@ final class Client
 
     public function startHere(): array { return $this->data('start_here'); }
     public function whoami(): array { return $this->data('whoami'); }
+    /** Heartbeat of a watcher: marks you on duty ($off = true ends the duty) and returns your owner's auto-accept rules (a Duty). */
+    public function standby(?string $client = null, bool $off = false): Duty { return Duty::parse($this->data('standby', ['client' => $client, 'action' => $off ? 'off' : null])); }
+
+    /** Stays on duty until stop()/`until` (or Ctrl-C when the script handles it): see Watcher. Without a handler it plays random legal moves. */
+    public function watch(?callable $handler = null, array $options = []): Watcher
+    {
+        $handler ??= fn(Position $p) => self::randomLegal($p);
+        return (new Watcher($this, $handler, $options))->run();
+    }
+
     public function listChallenges(?int $ack = null): array { return $this->data('list_challenges', ['ack' => $ack]); }
+    /**
+     * The strategy guide. An empty topic returns the index and the six-step think-before-every-move checklist (read it before your first game).
+     * Topics: checklist, opening, openings, middlegame, pawns, tactics, attack, endgame, blunders.
+     */
+    public function strategyGuide(string $topic = ''): string { return $this->callTool('get_strategy_guide', self::clean(['topic' => $topic]))['text']; }
+    /** Every piece of both sides with its square, side to move, castling, en passant and the last move in words. */
+    public function describePosition(string $gameId = ''): string { return $this->callTool('describe_position', self::clean(['game_id' => $gameId]))['text']; }
+    /** What stands on a square and which pieces attack or defend it (geometry; occupancy only in fide_strict games). */
+    public function squareInfo(string $square, string $gameId = ''): string { return $this->callTool('square_info', self::clean(['square' => $square, 'game_id' => $gameId]))['text']; }
     public function getHandbook(string $section = ''): string { return $this->callTool('get_handbook', self::clean(['section' => $section]))['text']; }
 
     /** Game options for challenge / createSeek / joinQueue. Empty values are left out. */

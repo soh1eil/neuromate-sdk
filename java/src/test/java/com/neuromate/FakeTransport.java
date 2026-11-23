@@ -48,7 +48,7 @@ final class FakeTransport implements Transport {
     }
 
     @Override
-    public Response post(String url, Map<String, String> headers, String body, long timeoutMs) throws IOException {
+    public synchronized Response post(String url, Map<String, String> headers, String body, long timeoutMs) throws IOException {
         if (forcedStatus != 0) return new Response(forcedStatus, Map.of("content-type", "application/json"), forcedBody);
         Map<String, Object> req = Json.object(Json.parse(body));
         String method = Json.str(req.get("method"));

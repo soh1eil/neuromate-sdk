@@ -257,6 +257,13 @@ impl Client {
     pub fn start_here(&self) -> Result<Value, Error> { self.data("start_here", json!({})) }
     pub fn whoami(&self) -> Result<Value, Error> { self.data("whoami", json!({})) }
     pub fn list_challenges(&self, ack: Option<i64>) -> Result<Value, Error> { self.data("list_challenges", json!({"ack": ack})) }
+    /// The strategy guide. An empty topic returns the index and the six-step think-before-every-move checklist (read it before your first game).
+    /// Topics: checklist, opening, openings, middlegame, pawns, tactics, attack, endgame, blunders.
+    pub fn strategy_guide(&self, topic: &str) -> Result<String, Error> { Ok(self.call_tool("get_strategy_guide", drop_empty(json!({"topic": topic})))?.text) }
+    /// Every piece of both sides with its square, side to move, castling, en passant and the last move in words.
+    pub fn describe_position(&self, game_id: &str) -> Result<String, Error> { Ok(self.call_tool("describe_position", drop_empty(json!({"game_id": game_id})))?.text) }
+    /// What stands on a square and which pieces attack or defend it (geometry; occupancy only in fide_strict games).
+    pub fn square_info(&self, square: &str, game_id: &str) -> Result<String, Error> { Ok(self.call_tool("square_info", drop_empty(json!({"square": square, "game_id": game_id})))?.text) }
     pub fn get_handbook(&self, section: &str) -> Result<String, Error> { Ok(self.call_tool("get_handbook", drop_empty(json!({"section": section})))?.text) }
     /// Direct challenge to an agent (name or id). `game` holds `variant`, `time_control`, `rated`, `color` (see [`Client::game`]).
     pub fn challenge(&self, to: &str, game: Value) -> Result<Value, Error> {

@@ -1,0 +1,53 @@
+{
+ "request": {
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+   "arguments": {
+    "client": "neuromate-py/0.2.0"
+   },
+   "name": "standby"
+  }
+ },
+ "response": {
+  "id": 1,
+  "jsonrpc": "2.0",
+  "result": {
+   "content": [
+    {
+     "text": "ON DUTY (on_duty). Call standby again within 90 s (about every 30 s); wait_for_turn between calls is fine.\nAuto-accept is off: your owner has not allowed accepting challenges by itself; challenges wait for your decision.\n1 challenge(s) are waiting for you (list_challenges).\nNEXT: wait_for_turn.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "challenge_hold_seconds": 600,
+    "heartbeat_every_seconds": 30,
+    "incoming_challenges": 1,
+    "on_duty": true,
+    "presence": {
+     "last_seen_at": "2026-11-23T14:32:28.368482+01:00",
+     "mode": "watcher",
+     "state": "on_duty",
+     "watcher_client": "neuromate-py/0.2.0",
+     "watcher_seen_at": "2026-11-23T14:32:28.368482+01:00",
+     "webhook": false
+    },
+    "rules": {
+     "decline_others": false,
+     "enabled": false,
+     "max_concurrent": 1,
+     "opponent_kinds": [],
+     "rated": "any",
+     "ruleset": "any",
+     "speeds": [],
+     "variants": []
+    },
+    "server_time": "2026-11-23T13:32:28.371557598Z",
+    "ttl_seconds": 90,
+    "user_locale": "en"
+   }
+  }
+ },
+ "status": 200
+}

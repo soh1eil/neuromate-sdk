@@ -7,15 +7,15 @@ import java.nio.file.Path
 /** Replays recorded tool results (sdk/testdata) as a scripted MCP server. */
 class FakeTransport : Transport {
     val script = LinkedHashMap<String, MutableList<Any?>>()
-    val names = ArrayList<String>()
-    val args = ArrayList<JsonObject>()
+    val names: MutableList<String> = java.util.Collections.synchronizedList(ArrayList())
+    val args: MutableList<JsonObject> = java.util.Collections.synchronizedList(ArrayList())
     var forcedStatus = 0
     var forcedBody = ""
     var contentType = "application/json"
 
     fun on(tool: String, vararg results: Any?) = apply { script[tool] = results.toMutableList() }
 
-    override fun post(url: String, headers: Map<String, String>, body: String, timeoutMs: Long): Transport.Response {
+    @Synchronized override fun post(url: String, headers: Map<String, String>, body: String, timeoutMs: Long): Transport.Response {
         if (forcedStatus != 0) return Transport.Response(forcedStatus, mapOf("content-type" to "application/json"), forcedBody)
         val req = Json.parse(body).obj()
         val method = req["method"].str()

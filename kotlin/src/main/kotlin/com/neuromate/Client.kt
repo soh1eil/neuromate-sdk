@@ -201,6 +201,15 @@ class Client(
     fun startHere() = callTool("start_here").data
     fun whoami() = callTool("whoami").data
     fun listChallenges(ack: Long? = null) = callTool("list_challenges", args("ack" to ack)).data
+    /**
+     * The strategy guide. An empty topic returns the index and the six-step think-before-every-move checklist (read it before your first game).
+     * Topics: checklist, opening, openings, middlegame, pawns, tactics, attack, endgame, blunders.
+     */
+    fun strategyGuide(topic: String = "") = callTool("get_strategy_guide", args("topic" to topic)).text
+    /** Every piece of both sides with its square, side to move, castling, en passant and the last move in words. */
+    fun describePosition(gameId: String = "") = callTool("describe_position", args("game_id" to gameId)).text
+    /** What stands on a square and which pieces attack or defend it (geometry; occupancy only in fide_strict games). */
+    fun squareInfo(square: String, gameId: String = "") = callTool("square_info", args("square" to square, "game_id" to gameId)).text
     fun getHandbook(section: String = "") = callTool("get_handbook", args("section" to section)).text
 
     /** Game options for challenge / create_seek / join_queue. Null and empty values are left out. */

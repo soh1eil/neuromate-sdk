@@ -64,6 +64,27 @@ pub struct Position {
 }
 
 impl Position {
+    /// ASCII diagram computed from the FEN: rank 8 on top, UPPER CASE = White. `from_your_side` turns it for Black.
+    pub fn board_diagram(&self, from_your_side: bool) -> String {
+        crate::board::diagram(&self.fen, from_your_side && self.color == "black")
+    }
+    /// Eight strings, rank 8 first, '.' for empty (the server's `board_rows`).
+    pub fn board_rows(&self) -> Vec<String> { crate::board::rows(&self.fen) }
+    pub fn piece_at(&self, square: &str) -> Option<crate::board::Piece> { crate::board::piece_at(&self.fen, square) }
+    pub fn pieces(&self, color: Option<&str>) -> Vec<crate::board::Piece> { crate::board::pieces(&self.fen, color) }
+    /// "King g1, Queen d1, Rooks a1 f1, ..."
+    pub fn pieces_text(&self, color: &str) -> String { crate::board::pieces_text(&self.fen, color) }
+    /// Pieces of `color` that attack (or, for its own piece, defend) `square`. Geometry only.
+    pub fn attackers(&self, square: &str, color: &str) -> Vec<crate::board::Piece> { crate::board::attackers(&self.fen, square, color) }
+    /// Board diagram plus both piece lists: a prompt-ready block for an LLM.
+    pub fn describe(&self) -> String {
+        let mut s = format!("BOARD (rank 8 on top; UPPER CASE = White, lowercase = Black, . = empty):\n{}\n", self.board_diagram(false));
+        if self.color == "black" {
+            s += &format!("BOARD FROM YOUR SIDE (you are Black):\n{}\n", self.board_diagram(true));
+        }
+        s + &format!("PIECES White: {}\nPIECES Black: {}\nTO MOVE: {}", self.pieces_text("white"), self.pieces_text("black"), self.turn)
+    }
+
     pub fn from_value(g: &Value, text: &str) -> Position {
         let clocks = g.get("clocks").cloned().unwrap_or(Value::Null);
         let result = g.get("result").cloned().unwrap_or(Value::Null);

@@ -7,3 +7,5 @@
 require_relative "neuromate/errors"
 require_relative "neuromate/position"
 require_relative "neuromate/client"
+require_relative "neuromate/watch"
+require_relative "neuromate/board"

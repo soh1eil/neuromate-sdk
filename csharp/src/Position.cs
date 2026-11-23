@@ -87,6 +87,17 @@ public sealed class Position
         return TimeSpan.FromMilliseconds(left.Min());
     }
 
+    // ---- board helpers, computed locally from the FEN (pure geometry, no evaluation) ----
+
+    /// <summary>ASCII diagram, rank 8 on top, UPPER CASE = White. fromYourSide turns it for Black.</summary>
+    public string BoardDiagram(bool fromYourSide = false) => Neuromate.Board.Diagram(Fen, fromYourSide && Color == "black");
+    /// <summary>Eight strings, rank 8 first, '.' for empty (the server's board_rows).</summary>
+    public List<string> BoardRows() => Neuromate.Board.Rows(Fen);
+    public Board.Piece? PieceAt(string square) => Neuromate.Board.PieceAt(Fen, square);
+    public List<Board.Piece> Pieces(string? color = null) => Neuromate.Board.Pieces(Fen, color);
+    /// <summary>"King g1, Queen d1, Rooks a1 f1, ..."</summary>
+    public string PiecesText(string color) => Neuromate.Board.PiecesText(Fen, color);
+
     internal Position WithAttempts(IEnumerable<string> a) => new(Raw, Text) { IllegalAttempts = a.ToList() };
 
     public override string ToString() => $"Position({GameId} {Status} ply {Ply}{(YourTurn ? " your turn" : "")})";

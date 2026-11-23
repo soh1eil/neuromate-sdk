@@ -154,5 +154,100 @@ test('chat is untrusted data and strict rules are parsed', function () {
     eq($p->strict(), true); eq($p->hintsAllowed, false);
 });
 
+
+// ---- watch: standby heartbeat, auto-accept rules, the loop ----
+
+use Neuromate\{Rules, Watch, Watcher};
+
+function onRules(array $patch = []): array
+{
+    return $patch + ['enabled' => true, 'speeds' => ['blitz'], 'variants' => ['standard'], 'rated' => 'any', 'ruleset' => 'any', 'opponent_kinds' => [], 'max_concurrent' => 1, 'decline_others' => false];
+}
+function standbyResult(array $patch = []): array
+{
+    $r = result('standby_on');
+    $r['structuredContent']['rules'] = onRules($patch);
+    return $r;
+}
+function runWatcher(Fake $f, callable $until, array $o = []): array
+{
+    $logs = [];
+    $w = new Watcher($f->client(), $o['handler'] ?? fn($p) => 'e4', ['log' => function ($m) use (&$logs) { $logs[] = $m; }, 'heartbeat_every' => 0.0, 'wait_seconds' => 0.01,
+        'until' => function ($w) use (&$logs, $until) { return $until($w, $logs); }] + $o);
+    $w->run();
+    return [$w, $logs];
+}
+$watchBase = function (array $waits, array $standby = null): Fake {
+    return (new Fake)->on('standby', $standby ?? standbyResult())->on('whoami', result('whoami_idle'))->on('list_challenges', result('list_challenges_empty'))
+        ->on('wait_for_turn', ...$waits)->on('accept_challenge', result('get_game_start'))->on('make_move', result('move_ok'))->on('decline_challenge', result('cancel'));
+};
+
+test('watch: rules match the shared vectors', function () {
+    $cases = json_decode(file_get_contents(__DIR__ . '/../../testdata/auto_accept_cases.json'), true);
+    yes(count($cases) >= 15, 'enough cases');
+    foreach ($cases as $c) { eq(Rules::fromArray($c['rules'])->evaluate($c['challenge'], $c['playing'])->action, $c['expect'], $c['name']); }
+});
+
+test('watch: speed and challenge info', function () {
+    eq(array_map(fn($x) => Watch::speedOf(null, $x), ['1+0', '3+2', '10+0', '30+0', '2d', 'untimed']), ['bullet', 'blitz', 'rapid', 'classical', 'correspondence', 'untimed']);
+    eq(Watch::speedOf(['kind' => 'realtime', 'initial_ms' => 180000, 'increment_ms' => 2000]), 'blitz');
+    $info = Watch::infoFromEvent(result('wait_challenge_received')['structuredContent']['events'][0]);
+    eq([$info['speed'], $info['from_kind'], $info['variant'], $info['rated']], ['blitz', 'agent', 'standard', false]);
+    eq(Watch::infoFromChallenge(result('list_challenges_busy')['structuredContent']['incoming_challenges'][0])['speed'], 'rapid');
+});
+
+test('watch: standby parses the owner rules', function () {
+    $d = (new Fake)->on('standby', standbyResult(['speeds' => ['bullet']]))->client()->standby('x');
+    eq($d->onDuty, true); eq($d->rules->speeds, ['bullet']); eq($d->heartbeatEverySeconds, 30);
+});
+
+test('watch: accepts a matching challenge and plays the game', function () use ($watchBase) {
+    $f = $watchBase([result('wait_challenge_received'), result('wait_timeout')]);
+    $f->script['get_game'] = [result('get_game_start')];
+    $f->on('wait_for_turn', result('wait_challenge_received'), waitResult('your_turn', 'get_game_start'), waitResult('game_over', 'resign'), result('wait_timeout'));
+    [$w] = runWatcher($f, fn($w) => $w->played >= 1);
+    eq($w->played, 1); eq($w->accepted, 1);
+    eq($f->names[0], 'standby'); yes(in_array('accept_challenge', $f->names, true), 'accepted'); yes(in_array('make_move', $f->names, true), 'moved');
+    eq($f->args[array_search('accept_challenge', $f->names, true)]['id'], 'ch_c4v3a4vr');
+    eq(end($f->args)['action'], 'off', 'a clean shutdown ends the duty');
+    yes(str_starts_with($f->args[0]['client'], 'neuromate-php/'), 'client name');
+});
+
+test('watch: a challenge outside the rules is left or declined', function () use ($watchBase) {
+    $f = $watchBase([result('wait_challenge_received'), result('wait_timeout')], standbyResult(['speeds' => ['bullet']]));
+    runWatcher($f, fn($w, $logs) => count(array_filter($logs, fn($m) => str_contains($m, 'left for the owner'))) > 0);
+    yes(!in_array('accept_challenge', $f->names, true) && !in_array('decline_challenge', $f->names, true), 'left alone');
+    $f = $watchBase([result('wait_challenge_received'), result('wait_timeout')], standbyResult(['speeds' => ['bullet'], 'decline_others' => true]));
+    runWatcher($f, fn($w) => in_array('decline_challenge', $f->names, true));
+    yes(!in_array('accept_challenge', $f->names, true), 'not accepted');
+    yes(str_contains($f->args[array_search('decline_challenge', $f->names, true)]['reason'], 'blitz'), 'reason names the speed');
+});
+
+test('watch: local rules override the owner, a running game resumes, a crashing handler survives', function () use ($watchBase) {
+    $f = $watchBase([result('wait_challenge_received'), waitResult('your_turn', 'get_game_start'), waitResult('game_over', 'resign'), result('wait_timeout')], standbyResult(['enabled' => false]));
+    [$w] = runWatcher($f, fn($w) => $w->played >= 1, ['rules' => new Rules(true)]);
+    eq($w->accepted, 1);
+
+    $gid = result('get_game_start')['structuredContent']['game']['game_id'];
+    $busy = result('whoami_idle');
+    $busy['structuredContent']['active_games'] = [['game_id' => $gid, 'opponent' => 'Bob', 'color' => 'white', 'your_turn' => true, 'ply' => 0, 'variant' => 'standard']];
+    $f = $watchBase([waitResult('your_turn', 'get_game_start'), waitResult('game_over', 'resign'), result('wait_timeout')]);
+    $f->on('whoami', $busy);
+    [$w] = runWatcher($f, fn($w) => $w->played >= 1);
+    eq($w->played, 1); yes(!in_array('accept_challenge', $f->names, true), 'resumed, not accepted');
+
+    $f = $watchBase([result('wait_challenge_received'), waitResult('your_turn', 'get_game_start'), waitResult('game_over', 'resign'), result('wait_timeout')]);
+    [$w, $logs] = runWatcher($f, fn($w) => $w->played >= 1, ['handler' => function ($p) { throw new RuntimeException('model crashed'); }]);
+    eq($w->played, 1); yes(count(array_filter($logs, fn($m) => str_contains($m, 'handler error'))) > 0, 'logged');
+    yes(in_array('make_move', $f->names, true), 'a fallback move was played');
+});
+
+test('watch: a rejected key stops the watcher', function () {
+    $f = new Fake;
+    $f->forced = ['status' => 401, 'headers' => ['content-type' => 'application/json'], 'body' => json_encode(fixture('http_401')['response'])];
+    $w = new Watcher($f->client(), fn($p) => 'e4', ['log' => fn($m) => null, 'heartbeat_every' => 10.0]);
+    throws(AuthException::class, fn() => $w->run());
+});
+
 echo $failures ? "\n$failures test(s) failed\n" : "\nall tests passed\n";
 exit($failures ? 1 : 0);

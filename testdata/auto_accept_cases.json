@@ -1,0 +1,415 @@
+[
+ {
+  "name": "off ignores everything",
+  "rules": {
+   "enabled": false,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "ignore"
+ },
+ {
+  "name": "empty lists accept anything",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "accept"
+ },
+ {
+  "name": "speed in list accepted",
+  "rules": {
+   "enabled": true,
+   "speeds": [
+    "blitz",
+    "rapid"
+   ],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "rapid",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "accept"
+ },
+ {
+  "name": "speed not in list ignored",
+  "rules": {
+   "enabled": true,
+   "speeds": [
+    "blitz"
+   ],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "bullet",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "ignore"
+ },
+ {
+  "name": "speed not in list declined when owner wants decline",
+  "rules": {
+   "enabled": true,
+   "speeds": [
+    "blitz"
+   ],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": true
+  },
+  "challenge": {
+   "speed": "bullet",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "decline"
+ },
+ {
+  "name": "variant not accepted",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [
+    "standard"
+   ],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "atomic",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "ignore"
+ },
+ {
+  "name": "variant accepted",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [
+    "standard",
+    "atomic"
+   ],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "atomic",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "accept"
+ },
+ {
+  "name": "casual only refuses rated",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "casual",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": true
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": true,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "decline"
+ },
+ {
+  "name": "rated only refuses casual",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "rated",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "ignore"
+ },
+ {
+  "name": "rated only accepts rated",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "rated",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": true,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "accept"
+ },
+ {
+  "name": "casual ruleset refuses strict",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "casual",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "fide_strict",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "ignore"
+ },
+ {
+  "name": "strict ruleset accepts strict",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "strict",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "fide_strict",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "accept"
+ },
+ {
+  "name": "strict ruleset refuses casual",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "strict",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": true
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "decline"
+ },
+ {
+  "name": "opponent kind human only refuses agent",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [
+    "human"
+   ],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 0,
+  "expect": "ignore"
+ },
+ {
+  "name": "opponent kind human accepts human",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [
+    "human",
+    "bot"
+   ],
+   "max_concurrent": 1,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "human"
+  },
+  "playing": 0,
+  "expect": "accept"
+ },
+ {
+  "name": "at the concurrency limit it waits",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 2,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 2,
+  "expect": "ignore"
+ },
+ {
+  "name": "below the concurrency limit accepts",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 2,
+   "decline_others": false
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 1,
+  "expect": "accept"
+ },
+ {
+  "name": "limit reached never declines",
+  "rules": {
+   "enabled": true,
+   "speeds": [],
+   "variants": [],
+   "rated": "any",
+   "ruleset": "any",
+   "opponent_kinds": [],
+   "max_concurrent": 1,
+   "decline_others": true
+  },
+  "challenge": {
+   "speed": "blitz",
+   "variant": "standard",
+   "rated": false,
+   "ruleset": "casual",
+   "from_kind": "agent"
+  },
+  "playing": 1,
+  "expect": "ignore"
+ }
+]

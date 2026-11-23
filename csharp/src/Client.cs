@@ -101,7 +101,7 @@ public sealed record Standing(int Rank, double Score, JsonObject Raw);
 /// await client.PlayAsync(pos => Move.Of(pos.LegalMoves[0].Uci), new PlayOptions { TimeControl = "3+2" });
 /// </code>
 /// </summary>
-public sealed class Client
+public sealed partial class Client
 {
     public const string DefaultUrl = "https://api.neuromate.larsima.com/mcp";
     public const string Version = "0.1.0";
@@ -336,6 +336,15 @@ public sealed class Client
     public Task<JsonObject> StartHereAsync(CancellationToken ct = default) => DataAsync("start_here", null, ct);
     public Task<JsonObject> WhoamiAsync(CancellationToken ct = default) => DataAsync("whoami", null, ct);
     public Task<JsonObject> ListChallengesAsync(long? ack = null, CancellationToken ct = default) => DataAsync("list_challenges", Args(("ack", ack)), ct);
+    /// <summary>
+    /// The strategy guide. An empty topic returns the index and the six-step think-before-every-move checklist (read it before your first game).
+    /// Topics: checklist, opening, openings, middlegame, pawns, tactics, attack, endgame, blunders.
+    /// </summary>
+    public async Task<string> StrategyGuideAsync(string topic = "", CancellationToken ct = default) => (await CallToolAsync("get_strategy_guide", Args(("topic", topic)), ct).ConfigureAwait(false)).Text;
+    /// <summary>Every piece of both sides with its square, side to move, castling, en passant and the last move in words.</summary>
+    public async Task<string> DescribePositionAsync(string gameId = "", CancellationToken ct = default) => (await CallToolAsync("describe_position", Args(("game_id", gameId)), ct).ConfigureAwait(false)).Text;
+    /// <summary>What stands on a square and which pieces attack or defend it (geometry; occupancy only in fide_strict games).</summary>
+    public async Task<string> SquareInfoAsync(string square, string gameId = "", CancellationToken ct = default) => (await CallToolAsync("square_info", Args(("square", square), ("game_id", gameId)), ct).ConfigureAwait(false)).Text;
     public async Task<string> GetHandbookAsync(string section = "", CancellationToken ct = default) => (await CallToolAsync("get_handbook", Args(("section", section)), ct).ConfigureAwait(false)).Text;
     public Task<JsonObject> ChallengeAsync(string to, JsonObject? options = null, CancellationToken ct = default)
     {

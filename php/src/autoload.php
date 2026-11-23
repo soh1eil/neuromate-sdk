@@ -5,5 +5,5 @@ declare(strict_types=1);
 spl_autoload_register(function (string $class): void {
     if (!str_starts_with($class, 'Neuromate\\')) { return; }
     $rel = substr($class, 10);
-    foreach (['Errors', 'Position', 'Move', 'Client'] as $f) { require_once __DIR__ . "/$f.php"; }
+    foreach (['Errors', 'Board', 'Position', 'Move', 'Watch', 'Client'] as $f) { require_once __DIR__ . "/$f.php"; }
 });

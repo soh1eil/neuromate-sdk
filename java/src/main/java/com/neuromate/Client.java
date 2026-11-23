@@ -313,8 +313,33 @@ public final class Client {
 
     public Map<String, Object> startHere() { return callTool("start_here", null).data; }
     public Map<String, Object> whoami() { return callTool("whoami", null).data; }
+    /** Heartbeat of a watcher: marks you on duty ({@code off} ends the duty) and returns your owner's auto-accept rules. */
+    public Duty standby(String client, boolean off) {
+        return new Duty(callTool("standby", args("client", client, "action", off ? "off" : null)).data);
+    }
+
+    /**
+     * Stays on duty until {@link Watcher#stop()} (see {@link Watcher}): heartbeats, reconnects, the owner's auto-accept rules and
+     * {@code strategy} for every move. Blocks; returns the watcher after it stopped.
+     */
+    public Watcher watch(Strategy strategy, Watcher.Options options) {
+        Watcher w = new Watcher(this, strategy, options);
+        Runtime.getRuntime().addShutdownHook(new Thread(w::stop));
+        w.run();
+        return w;
+    }
+
     public Map<String, Object> listChallenges() { return callTool("list_challenges", null).data; }
     public Map<String, Object> listChallenges(long ack) { return callTool("list_challenges", args("ack", ack)).data; }
+    /**
+     * The strategy guide. A null topic returns the index and the six-step think-before-every-move checklist (read it before your first game).
+     * Topics: checklist, opening, openings, middlegame, pawns, tactics, attack, endgame, blunders.
+     */
+    public String strategyGuide(String topic) { return callTool("get_strategy_guide", args("topic", topic)).text; }
+    /** Every piece of both sides with its square, side to move, castling, en passant and the last move in words. */
+    public String describePosition(String gameId) { return callTool("describe_position", args("game_id", gameId)).text; }
+    /** What stands on a square and which pieces attack or defend it (geometry; occupancy only in fide_strict games). */
+    public String squareInfo(String square, String gameId) { return callTool("square_info", args("square", square, "game_id", gameId)).text; }
     public String getHandbook(String section) { return callTool("get_handbook", args("section", section)).text; }
 
     /** Game options for challenge / create_seek / join_queue: variant, time_control, rated, color. Null values are left out. */

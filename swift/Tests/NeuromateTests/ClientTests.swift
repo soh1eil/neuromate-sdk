@@ -10,7 +10,11 @@ final class Fake: Transport, @unchecked Sendable {
     var forced: TransportReply?
     var contentType = "application/json"
 
+    /// Thread-safe copies for tests that poll while a watcher runs.
+    func snapshot() -> (names: [String], args: [JSON]) { lock.lock(); defer { lock.unlock() }; return (names, args) }
+
     @discardableResult func on(_ tool: String, _ results: JSON...) -> Fake { script[tool] = results; return self }
+    @discardableResult func on(_ tool: String, _ first: JSON, _ rest: [JSON]) -> Fake { script[tool] = [first] + rest; return self }
 
     func client(key: String = "nm_live_test", model: Model? = nil) throws -> Client { try Client(apiKey: key, model: model, transport: self) }
 

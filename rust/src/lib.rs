@@ -8,13 +8,17 @@
 //! println!("{}", end.result_score);
 //! # Ok::<(), neuromate::Error>(())
 //! ```
+pub mod board;
 mod client;
 mod error;
 mod play;
 mod position;
+mod watch;
+
 
 pub use client::{Client, ClientOptions, Model, Reply, ToolOut, Transport, DEFAULT_URL, VERSION};
 pub use error::{Error, ToolError};
 pub use play::{ChatLog, ChatMessage, Move, MoveResult, PlayOptions, Queued, Standing, Turn};
 pub use position::{LegalMove, Position};
+pub use watch::{info_from_challenge, info_from_event, speed_of, Decision, Duty, Rules, WatchOptions, Watcher};
 pub use serde_json::{json, Value};

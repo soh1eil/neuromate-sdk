@@ -20,6 +20,13 @@ public sealed class FakeTransport : ITransport
         return (JsonObject)JsonNode.Parse(File.ReadAllText(Path.Combine(dir!, "testdata", name + ".json")))!;
     }
 
+    public static JsonNode FixtureArray(string name)
+    {
+        var dir = AppContext.BaseDirectory;
+        while (dir != null && !Directory.Exists(Path.Combine(dir, "testdata"))) dir = Path.GetDirectoryName(dir);
+        return JsonNode.Parse(File.ReadAllText(Path.Combine(dir!, "testdata", name + ".json")))!;
+    }
+
     public static JsonNode Result(string name) => Fixture(name)["response"]!["result"]!.DeepClone();
 
     /// <summary>A wait_for_turn result around the game of a recorded fixture.</summary>
@@ -32,6 +39,11 @@ public sealed class FakeTransport : ITransport
     public Task<TransportReply> PostAsync(string url, IReadOnlyDictionary<string, string> headers, string body, TimeSpan timeout, CancellationToken ct)
     {
         if (ForcedStatus != 0) return Task.FromResult(new TransportReply(ForcedStatus, new Dictionary<string, string>(), ForcedBody));
+        lock (this) return Reply(body);
+    }
+
+    private Task<TransportReply> Reply(string body)
+    {
         var req = JsonNode.Parse(body)!;
         var method = (string)req["method"]!;
         if (method == "notifications/initialized") return Task.FromResult(new TransportReply(202, new Dictionary<string, string>(), ""));

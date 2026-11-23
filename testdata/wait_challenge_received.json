@@ -1,0 +1,52 @@
+{
+ "request": {
+  "id": 2,
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+   "arguments": {
+    "timeout_seconds": 2
+   },
+   "name": "wait_for_turn"
+  }
+ },
+ "response": {
+  "id": 2,
+  "jsonrpc": "2.0",
+  "result": {
+   "content": [
+    {
+     "text": "EVENTS:\n  - #1 challenge_received challenge_id=ch_c4v3a4vr from=Bob from_kind=agent from_model=Model B held_seconds=0 message= rated=false ruleset=casual speed=blitz time_control=3+0 time_control_text=3 minutes each, no increment variant=standard\n\nNEXT: Bob challenged you (standard, 3+0): accept_challenge {id:\"ch_c4v3a4vr\"} or decline_challenge {id:\"ch_c4v3a4vr\"}.\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "events": [
+     {
+      "at": "2026-11-23T14:32:28.814320503+01:00",
+      "data": {
+       "challenge_id": "ch_c4v3a4vr",
+       "from": "Bob",
+       "from_kind": "agent",
+       "from_model": "Model B",
+       "held_seconds": 0,
+       "message": "",
+       "rated": false,
+       "ruleset": "casual",
+       "speed": "blitz",
+       "time_control": "3+0",
+       "time_control_text": "3 minutes each, no increment",
+       "variant": "standard"
+      },
+      "seq": 1,
+      "type": "challenge_received"
+     }
+    ],
+    "next": "Bob challenged you (standard, 3+0): accept_challenge {id:\"ch_c4v3a4vr\"} or decline_challenge {id:\"ch_c4v3a4vr\"}.",
+    "reason": "",
+    "user_locale": "en"
+   }
+  }
+ },
+ "status": 200
+}

@@ -81,4 +81,15 @@ final class Position
     }
 
     public function __toString(): string { return "Position({$this->gameId} {$this->status} ply {$this->ply}" . ($this->yourTurn ? ' your turn' : '') . ')'; }
+
+    // ---- board helpers, computed locally from the FEN (pure geometry, no evaluation) ----
+
+    /** ASCII diagram, rank 8 on top, UPPER CASE = White. $fromYourSide turns it for Black. */
+    public function boardDiagram(bool $fromYourSide = false): string { return Board::diagram($this->fen, $fromYourSide && $this->color === 'black'); }
+    /** Eight strings, rank 8 first, '.' for empty (the server's board_rows). */
+    public function boardRows(): array { return Board::rows($this->fen); }
+    public function pieceAt(string $square): ?array { return Board::pieceAt($this->fen, $square); }
+    public function pieces(?string $color = null): array { return Board::pieces($this->fen, $color); }
+    /** "King g1, Queen d1, Rooks a1 f1, ..." */
+    public function piecesText(string $color): string { return Board::piecesText($this->fen, $color); }
 }

@@ -126,4 +126,24 @@ public final class Position {
     public String toString() {
         return "Position{" + gameId + " " + status + " ply " + ply + (yourTurn ? " your turn" : "") + "}";
     }
+
+    // ---- board helpers, computed locally from the FEN (pure geometry, no evaluation) ----
+
+    /** ASCII diagram, rank 8 on top, UPPER CASE = White. fromYourSide turns it for Black. */
+    public String board(boolean fromYourSide) { return Board.diagram(fen, fromYourSide && "black".equals(color)); }
+    /** Eight strings, rank 8 first, '.' for empty (the server's board_rows). */
+    public List<String> boardRows() { return Board.rows(fen); }
+    public Board.Piece pieceAt(String square) { return Board.pieceAt(fen, square); }
+    public List<Board.Piece> pieces(String color) { return Board.pieces(fen, color); }
+    /** "King g1, Queen d1, Rooks a1 f1, ..." */
+    public String piecesText(String color) { return Board.piecesText(fen, color); }
+    /** Pieces of color that attack (or, for its own piece, defend) square. */
+    public List<Board.Piece> attackers(String square, String color) { return Board.attackers(fen, square, color); }
+    /** Board diagram, both piece lists and the origin square of every legal move: a prompt-ready block. */
+    public String describe() {
+        StringBuilder b = new StringBuilder("BOARD (rank 8 on top; UPPER CASE = White, lowercase = Black, . = empty):\n").append(board(false)).append('\n');
+        if ("black".equals(color)) b.append("BOARD FROM YOUR SIDE (you are Black):\n").append(board(true)).append('\n');
+        b.append("PIECES White: ").append(piecesText("white")).append("\nPIECES Black: ").append(piecesText("black")).append("\nTO MOVE: ").append(turn);
+        return b.toString();
+    }
 }
