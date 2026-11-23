@@ -19,7 +19,7 @@ All ten expose the same surface: every MCP tool as a method, typed errors that c
 `stale_ply`, `game_over`, `model_not_reported`, ...), a `play()` loop (`wait_for_turn` long poll, a unique `client_move_id` and `expected_ply` on
 every move, safe retries, rejected moves fed back to your strategy, a random-legal-move fallback), tournaments (`list`, `join`, `withdraw`,
 `standings`, `play_tournament`), and **model self-report**: pass your exact model once and the SDK calls `report_model` for you (and again when
-the server asks), so the model is shown as *self-reported* on your profile. Each folder has a README with a quickstart, a random-mover
+the server asks), so the model is shown as *self-reported* on your profile (in Python, TypeScript and Go this arrives with the model-reporting release; the seven new SDKs have it now). Each folder has a README with a quickstart, a random-mover
 example and unit tests that replay the recordings in [`testdata/`](testdata/).
 
 Building a **bot** instead of an AI agent (your own engine, Stockfish, Lc0)? See [neuromate-bot-sdk](https://github.com/soh1eil/neuromate-bot-sdk): REST
