@@ -7,7 +7,7 @@ import re
 from typing import Any, Callable, Mapping
 
 from ._types import (
-    Analysis, Created, Handbook, JoinResult, LegalMove, LegalMoves, Lobby, MoveInfo, MoveResult, Pairing, Position, Queued,
+    Analysis, CoachContext, CoachEvent, CoachSession, CoachSessions, CoachWait, ChatLog, ChatMessage, Created, Handbook, JoinResult, LegalMove, LegalMoves, Lobby, MoveInfo, MoveResult, Pairing, Position, Queued,
     Standing, Standings, Tournament, Turn, Event, WithdrawResult,
 )
 from .errors import AuthError, HTTPError, ProtocolError, RateLimitedError, ServerError, tool_error_class
@@ -163,7 +163,7 @@ def decode_tool(tool: str, result: Any) -> ToolOut:
 
 _GAME_KEYS = (
     "variant", "time_control", "initial_seconds", "increment_seconds", "delay_seconds", "bronstein_seconds",
-    "correspondence_days", "move_cap_seconds", "bank_seconds", "rated", "chess960_position", "color",
+    "correspondence_days", "move_cap_seconds", "bank_seconds", "rated", "ruleset", "chess960_position", "color",
 )
 
 
@@ -256,3 +256,40 @@ def parse_standings(out: ToolOut) -> Standings:
     rows = [Standing._from(r) for r in d.get("standings") or [] if isinstance(r, dict)]
     return Standings(_tournament(out), rows, [Pairing._from(p) for p in d.get("pairings") or [] if isinstance(p, dict)],
                      int(d["total"]) if isinstance(d.get("total"), (int, float)) else len(rows), out.text)
+
+
+# ---- coach mode ----
+
+
+def parse_coach_sessions(out: ToolOut) -> CoachSessions:
+    return CoachSessions([CoachSession._from(x) for x in out.data.get("sessions") or [] if isinstance(x, dict)], out.text)
+
+
+def parse_coach_wait(out: ToolOut) -> CoachWait:
+    events = []
+    for e in out.data.get("events") or []:
+        if isinstance(e, dict):
+            data = {k: v for k, v in e.items() if k not in ("type", "session_id")}
+            events.append(CoachEvent(str(e.get("type") or ""), str(e.get("session_id") or ""), data))
+    return CoachWait(events, out.data.get("timeout") is True, str(out.data.get("user_locale") or ""), str(out.data.get("next") or ""), out.text)
+
+
+def parse_coach_context(out: ToolOut) -> CoachContext:
+    sess = out.data.get("session") if isinstance(out.data.get("session"), dict) else {}
+    return CoachContext(str(sess.get("id") or ""), str(out.data.get("user_locale") or ""), str(out.data.get("policy") or ""), out.data, out.text)
+
+
+def parse_chat_message(m: Mapping[str, Any]) -> ChatMessage:
+    a = m.get("author") or {}
+    return ChatMessage(str(m.get("id", "")), int(m.get("seq") or 0), str(m.get("game_id", "")), str(a.get("kind", "")),
+                       str(a.get("name", "")), str(a.get("key", "")), str(m.get("color", "")), str(m.get("text", "")),
+                       str(m.get("created_at", "")), bool(m.get("untrusted", True)), bool(m.get("hidden", False)))
+
+
+def parse_chat_sent(out: ToolOut) -> ChatMessage:
+    return parse_chat_message(out.data.get("message") or {})
+
+
+def parse_chat_log(out: ToolOut) -> ChatLog:
+    d = out.data
+    return ChatLog(str(d.get("game_id", "")), [parse_chat_message(m) for m in d.get("messages") or []], int(d.get("last_seq") or 0), out.text)

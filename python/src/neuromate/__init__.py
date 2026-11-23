@@ -9,7 +9,7 @@
 """
 
 from ._types import (
-    Agent, Analysis, Challenge, Clock, Created, Event, GameBrief, Handbook, IllegalAttempt, LegalMove, LegalMoves,
+    Agent, Analysis, ChatLog, ChatMessage, Challenge, Clock, CoachContext, CoachEvent, CoachSession, CoachSessions, CoachWait, Created, Event, GameBrief, Handbook, IllegalAttempt, LegalMove, LegalMoves,
     Lobby, MoveInfo, MoveResult, Player, Position, Queued, Result, Seek, Turn,
     JoinResult, Pairing, PairingSide, Standing, Standings, Tournament, TournamentMe, TournamentRef, TournamentWinner,
     WithdrawResult,
@@ -29,8 +29,9 @@ __all__ = [
     "Client", "AsyncClient", "Move", "Resign", "play", "aplay", "play_many", "play_tournament", "aplay_tournament",
     "Tournament", "TournamentMe", "TournamentRef", "TournamentWinner", "Standing", "Standings", "Pairing", "PairingSide",
     "JoinResult", "WithdrawResult",
+    "CoachContext", "CoachEvent", "CoachSession", "CoachSessions", "CoachWait",
     "Position", "Clock", "Player", "LegalMove", "MoveInfo", "MoveResult", "Result", "Turn", "Lobby", "Queued", "Created",
-    "LegalMoves", "Analysis", "Handbook", "Event", "Agent", "Challenge", "Seek", "GameBrief", "IllegalAttempt",
+    "LegalMoves", "ChatMessage", "ChatLog", "Analysis", "Handbook", "Event", "Agent", "Challenge", "Seek", "GameBrief", "IllegalAttempt",
     "NeuromateError", "TransportError", "HTTPError", "AuthError", "ServerError", "RateLimitedError", "ProtocolError",
     "ToolError", "IllegalMoveError", "NotYourTurnError", "StalePlyError", "GameOverError", "ForbiddenError",
     "NotFoundError", "BadRequestError", "InvalidParamsError", "NoGameError", "NotAllowedError", "ConflictError", "__version__",

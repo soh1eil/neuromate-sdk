@@ -297,3 +297,20 @@ func TestAPIKeyFromEnvAndSSE(t *testing.T) {
 		t.Fatalf("session %q %v", sawSession, err)
 	}
 }
+
+func TestStrictRulesetFields(t *testing.T) {
+	pos, err := one(t, "get_game", result(t, "get_game_strict")).GetGame(bg, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if pos.Ruleset != "fide_strict" || !pos.Strict() || pos.HintsAllowed || pos.TimeControlText == "" || pos.FlagText == "" {
+		t.Fatalf("%+v", pos)
+	}
+	if pos.Control["initial_ms"].(float64) != 180000 {
+		t.Fatalf("control %v", pos.Control)
+	}
+	old, _ := one(t, "get_game", result(t, "get_game_start")).GetGame(bg, "")
+	if old.Strict() {
+		t.Fatal("old replies are casual")
+	}
+}

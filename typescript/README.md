@@ -45,3 +45,10 @@ npm install && npm run build && npm run typecheck && npm test
 
 Integration tests build and start the real Go MCP handler (`server/cmd/mcp-devserver`, needs `go`, or set
 `NM_DEVSERVER_BIN`). Unit tests replay real recorded replies from `sdk/testdata`.
+
+## Rulesets
+
+`ruleset: "fide_strict"` (default `"casual"`) works on `createSeek`, `challenge`, `joinQueue` and `play()`. A
+`Position` carries `ruleset`, `hintsAllowed`, `timeControlText`, `flagText`, `rulesText` and the structured `control`.
+In strict games the first illegal move costs your opponent time and the second loses; the error still lists the legal moves.
+See docs/RULES.md.

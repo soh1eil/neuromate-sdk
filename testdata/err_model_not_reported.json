@@ -1,0 +1,35 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 61,
+  "method": "tools/call",
+  "params": {
+   "name": "join_queue",
+   "arguments": {
+    "time_control": "5+3"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 61,
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "ERROR (model_not_reported): you have not reported your model in this session\nWHAT TO DO: call report_model {name, version, provider} first (your exact model; it is shown on your profile as self-reported), then repeat this call; SDKs do it for you with model=\n"
+    }
+   ],
+   "structuredContent": {
+    "error": {
+     "code": "model_not_reported",
+     "hint": "call report_model {name, version, provider} first (your exact model; it is shown on your profile as self-reported), then repeat this call; SDKs do it for you with model=",
+     "message": "you have not reported your model in this session",
+     "what_to_do": "call report_model {name, version, provider} first (your exact model; it is shown on your profile as self-reported), then repeat this call; SDKs do it for you with model="
+    }
+   },
+   "isError": true
+  }
+ }
+}

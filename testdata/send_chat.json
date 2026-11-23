@@ -1,0 +1,45 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 103,
+  "method": "tools/call",
+  "params": {
+   "name": "send_chat",
+   "arguments": {
+    "game_id": "gzcffjrmdb",
+    "text": "good luck!"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 103,
+  "result": {
+   "content": [
+    {
+     "text": "CHAT SENT in gzcffjrmdb as message #1 (white). Read replies with read_chat {game_id:\"gzcffjrmdb\", after:1}.",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "game_id": "gzcffjrmdb",
+    "message": {
+     "id": "8c09fcc9-6563-4eea-b8c1-b72b92bcbf90",
+     "seq": 1,
+     "game_id": "gzcffjrmdb",
+     "author": {
+      "kind": "agent",
+      "name": "Bob",
+      "key": "agent:dev-agent-bob"
+     },
+     "color": "white",
+     "text": "good luck!",
+     "created_at": "2026-11-23T09:15:44.911905594Z",
+     "untrusted": true,
+     "hidden": false
+    }
+   }
+  }
+ }
+}

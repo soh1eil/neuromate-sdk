@@ -3,9 +3,9 @@ import {
   AuthError, HTTPError, ProtocolError, RateLimitedError, ServerError, toolErrorClass,
 } from "./errors.js";
 import {
-  type Analysis, type Created, type Handbook, type LegalMoves, type Lobby, type MoveResult, type Position, type Queued, type Turn,
+  type Analysis, type CoachContext, type CoachSessions, type CoachWait, type ChatLog, type ChatMessage, type Created, type Handbook, type LegalMoves, type Lobby, type MoveResult, type Position, type Queued, type Turn,
   type JoinResult, type Standings, type Tournament, type WithdrawResult,
-  parseEvent, parseLobby, parseMoveInfo, parsePairing, parsePosition, parseStanding, parseTournament,
+  parseCoachSession, parseEvent, parseLobby, parseMoveInfo, parsePairing, parsePosition, parseStanding, parseTournament,
 } from "./types.js";
 
 type Rec = Record<string, unknown>;
@@ -191,6 +191,25 @@ export function toLegal(out: ToolOut): LegalMoves {
   return { gameId: String(d["game_id"] ?? ""), ply: Number(d["ply"] ?? 0), moves, text: out.text };
 }
 
+export function toChatMessage(m: Rec): ChatMessage {
+  const a = (m["author"] ?? {}) as Rec;
+  return {
+    id: String(m["id"] ?? ""), seq: Number(m["seq"] ?? 0), gameId: String(m["game_id"] ?? ""), authorKind: String(a["kind"] ?? ""),
+    authorName: String(a["name"] ?? ""), authorKey: String(a["key"] ?? ""), color: String(m["color"] ?? ""), text: String(m["text"] ?? ""),
+    createdAt: String(m["created_at"] ?? ""), untrusted: m["untrusted"] !== false, hidden: m["hidden"] === true,
+  };
+}
+
+export function toChatSent(out: ToolOut): ChatMessage {
+  return toChatMessage((out.data["message"] ?? {}) as Rec);
+}
+
+export function toChatLog(out: ToolOut): ChatLog {
+  const d = out.data;
+  const messages = (Array.isArray(d["messages"]) ? (d["messages"] as Rec[]) : []).map(toChatMessage);
+  return { gameId: String(d["game_id"] ?? ""), messages, lastSeq: Number(d["last_seq"] ?? 0), text: out.text };
+}
+
 export function toAnalysis(out: ToolOut): Analysis {
   const available = out.data["available"] !== false;
   return { text: out.text, data: out.data, available, status: available ? "done" : String(out.data["status"] ?? "") };
@@ -226,3 +245,21 @@ export function toStandings(out: ToolOut): Standings {
   const pairings = (Array.isArray(d["pairings"]) ? (d["pairings"] as Rec[]) : []).map(parsePairing);
   return { tournament: tournamentOf(out), standings, pairings, total: typeof d["total"] === "number" ? d["total"] : standings.length, text: out.text };
 }
+
+// ---- coach mode ----
+
+export const toCoachSessions = (out: ToolOut): CoachSessions =>
+  ({ sessions: (Array.isArray(out.data["sessions"]) ? (out.data["sessions"] as Rec[]) : []).map(parseCoachSession), text: out.text });
+
+export const toCoachWait = (out: ToolOut): CoachWait => ({
+  events: (Array.isArray(out.data["events"]) ? (out.data["events"] as Rec[]) : []).map((e) => {
+    const { type, session_id, ...data } = e;
+    return { type: String(type ?? ""), sessionId: String(session_id ?? ""), data };
+  }),
+  timedOut: out.data["timeout"] === true, userLocale: String(out.data["user_locale"] ?? ""), next: String(out.data["next"] ?? ""), text: out.text,
+});
+
+export const toCoachContext = (out: ToolOut): CoachContext => {
+  const sess = (out.data["session"] ?? {}) as Rec;
+  return { sessionId: String(sess["id"] ?? ""), userLocale: String(out.data["user_locale"] ?? ""), policy: String(out.data["policy"] ?? ""), data: out.data, text: out.text };
+};

@@ -75,3 +75,10 @@ Every MCP tool is a method: `StartHere`, `Whoami`, `ListChallenges`, `CreateSeek
 `go test -race ./...` runs unit tests on recorded server replies (`../testdata`) and integration tests against
 the real server handler: it builds `server/cmd/mcp-devserver` and starts it with `NM_DEV=1` (set
 `NM_DEVSERVER_BIN` to use a prebuilt one; the integration tests skip when it cannot be built).
+
+## Rulesets
+
+`GameOptions{Ruleset: "fide_strict"}` (or `WithRuleset("fide_strict")` for `Play`) asks for FIDE strict rules; the
+default is `"casual"` and the opponent may decline. `Position` carries `Ruleset`, `HintsAllowed`, `TimeControlText`,
+`FlagText`, `RulesText` and `Control`; `pos.Strict()` is a shortcut. In strict games the first illegal move costs the
+opponent time and the second loses (the error still lists the legal moves). See docs/RULES.md.

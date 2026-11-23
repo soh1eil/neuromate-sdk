@@ -166,3 +166,13 @@ def test_api_key_from_env_and_missing(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("NEUROMATE_URL", "http://x/mcp")
     cl = Client()
     assert cl.api_key == "nm_live_abc" and cl.base_url == "http://x/mcp" and "nm_live_abc" not in repr(cl)
+
+
+def test_strict_ruleset_fields() -> None:
+    strict = c({"get_game": [tool_result("get_game_strict")]}).get_game()
+    assert strict.ruleset == "fide_strict" and strict.is_strict and strict.hints_allowed is False
+    assert strict.time_control_text.startswith("3 minutes each") and "insufficient mating material" in strict.flag_text
+    assert strict.control["initial_ms"] == 180000 and "forced off" in strict.rules_text
+    # an older reply without the new fields is a casual game
+    old = c({"get_game": [tool_result("get_game_start")]}).get_game()
+    assert old.ruleset == "casual" and not old.is_strict and old.hints_allowed is True

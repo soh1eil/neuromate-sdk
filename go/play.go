@@ -24,26 +24,29 @@ func UCI(move string) Move { return Move{Move: move} }
 type Strategy func(ctx context.Context, pos *Position) (Move, error)
 
 type playConfig struct {
-	gameID, opponent, variant, timeControl, pool string
-	rated, acceptChallenges, useClock            bool
-	safety                                       time.Duration
-	maxIllegal, maxRetries                       int
-	wait                                         float64
-	fallback                                     func(*Position) Move
-	onPosition                                   func(*Position)
-	onDraw                                       func(*Position) bool
-	findTimeout                                  time.Duration
-	onEvent                                      func(Event)
-	noJoin                                       bool
+	gameID, opponent, variant, timeControl, pool, ruleset string
+	rated, acceptChallenges, useClock                     bool
+	safety                                                time.Duration
+	maxIllegal, maxRetries                                int
+	wait                                                  float64
+	fallback                                              func(*Position) Move
+	onPosition                                            func(*Position)
+	onDraw                                                func(*Position) bool
+	findTimeout                                           time.Duration
+	onEvent                                               func(Event)
+	noJoin                                                bool
 }
 
 // PlayOption configures Play.
 type PlayOption func(*playConfig)
 
-func WithGameID(id string) PlayOption             { return func(c *playConfig) { c.gameID = id } }
-func WithOpponent(name string) PlayOption         { return func(c *playConfig) { c.opponent = name } }
-func WithVariant(v string) PlayOption             { return func(c *playConfig) { c.variant = v } }
-func WithTimeControl(tc string) PlayOption        { return func(c *playConfig) { c.timeControl = tc } }
+func WithGameID(id string) PlayOption      { return func(c *playConfig) { c.gameID = id } }
+func WithOpponent(name string) PlayOption  { return func(c *playConfig) { c.opponent = name } }
+func WithVariant(v string) PlayOption      { return func(c *playConfig) { c.variant = v } }
+func WithTimeControl(tc string) PlayOption { return func(c *playConfig) { c.timeControl = tc } }
+
+// WithRuleset picks "casual" (default) or "fide_strict" for games Play starts.
+func WithRuleset(r string) PlayOption             { return func(c *playConfig) { c.ruleset = r } }
 func WithRated(r bool) PlayOption                 { return func(c *playConfig) { c.rated = r } }
 func WithPool(p string) PlayOption                { return func(c *playConfig) { c.pool = p } }
 func WithAcceptChallenges() PlayOption            { return func(c *playConfig) { c.acceptChallenges = true } }
@@ -162,14 +165,14 @@ func (c *Client) Play(ctx context.Context, strategy Strategy, opts ...PlayOption
 		case len(mine) > 0:
 			gameID = mine[0].GameID
 		case cfg.opponent != "":
-			g := GameOptions{Variant: cfg.variant, TimeControl: cfg.timeControl, Rated: cfg.rated}
+			g := GameOptions{Variant: cfg.variant, TimeControl: cfg.timeControl, Rated: cfg.rated, Ruleset: cfg.ruleset}
 			if _, err := retry(ctx, cfg, noDeadline, func() (*Created, error) {
 				return c.Challenge(ctx, cfg.opponent, ChallengeOptions{GameOptions: g})
 			}); err != nil {
 				return nil, err
 			}
 		default:
-			g := GameOptions{Variant: cfg.variant, TimeControl: cfg.timeControl, Rated: cfg.rated}
+			g := GameOptions{Variant: cfg.variant, TimeControl: cfg.timeControl, Rated: cfg.rated, Ruleset: cfg.ruleset}
 			// A join that errors may still have queued us: leave on the way out.
 			queued = true
 			q, err := retry(ctx, cfg, noDeadline, func() (*Queued, error) {

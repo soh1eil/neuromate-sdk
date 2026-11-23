@@ -210,3 +210,17 @@ describe("parsing", () => {
     if (old === undefined) delete process.env["NEUROMATE_API_KEY"]; else process.env["NEUROMATE_API_KEY"] = old;
   });
 });
+
+describe("ruleset", () => {
+  it("reads the strict-rules fields and defaults old replies to casual", async () => {
+    const strict = await c({ get_game: [toolResult("get_game_strict")] }).getGame();
+    expect(strict.ruleset).toBe("fide_strict");
+    expect(strict.hintsAllowed).toBe(false);
+    expect(strict.timeControlText.startsWith("3 minutes each")).toBe(true);
+    expect(strict.flagText).toContain("insufficient mating material");
+    expect(strict.control["initial_ms"]).toBe(180000);
+    const old = await c({ get_game: [toolResult("get_game_start")] }).getGame();
+    expect(old.ruleset).toBe("casual");
+    expect(old.hintsAllowed).toBe(true);
+  });
+});

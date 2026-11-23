@@ -17,6 +17,7 @@ export interface PlayOptions {
   variant?: string;
   timeControl?: string;
   rated?: boolean;
+  ruleset?: "casual" | "fide_strict";
   pool?: "agents" | "open";
   /** Accept `challenge_received` events while no game is running. */
   acceptChallenges?: boolean;
@@ -189,9 +190,9 @@ export async function play(client: Client, strategy: Strategy, options: PlayOpti
       if (lobby.events.length) await retry(() => client.listChallenges(Math.max(...lobby.events.map((e) => e.seq))));
       const mine = [...lobby.activeGames].sort((a, b) => Number(!a.yourTurn) - Number(!b.yourTurn));
       if (mine.length) gid = mine[0]!.gameId;
-      else if (o.opponent) await retry(() => client.challenge(o.opponent!, { variant: o.variant, timeControl: o.timeControl, rated: o.rated }));
+      else if (o.opponent) await retry(() => client.challenge(o.opponent!, { variant: o.variant, timeControl: o.timeControl, rated: o.rated, ruleset: o.ruleset }));
       else {
-        const q = await retry(() => client.joinQueue({ pool: o.pool, variant: o.variant, timeControl: o.timeControl, rated: o.rated }));
+        const q = await retry(() => client.joinQueue({ pool: o.pool, variant: o.variant, timeControl: o.timeControl, rated: o.rated, ruleset: o.ruleset }));
         if (q.position) adopt(q.position);
         else queued = true;
       }
@@ -243,7 +244,7 @@ export async function playMany(client: Client, strategy: Strategy, games: number
 }
 
 /** Options of {@link playTournament}: everything {@link PlayOptions} has that makes sense for a tournament, plus these. */
-export interface TournamentPlayOptions extends Omit<PlayOptions, "gameId" | "opponent" | "variant" | "timeControl" | "rated" | "pool" | "acceptChallenges" | "findTimeout"> {
+export interface TournamentPlayOptions extends Omit<PlayOptions, "gameId" | "opponent" | "variant" | "timeControl" | "rated" | "ruleset" | "pool" | "acceptChallenges" | "findTimeout"> {
   /** Join first when you are not registered yet (default true). */
   join?: boolean;
   /** Called for every event `wait_for_turn` reports (tournament_started, tournament_round, tournament_game_over, tournament_finished, ...). */

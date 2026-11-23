@@ -86,31 +86,42 @@ type IllegalAttempt struct {
 
 // Position is everything about a game from your seat. A Strategy receives it.
 type Position struct {
-	GameID          string      `json:"game_id"`
-	Status          string      `json:"status"` // created, started, finished, aborted
-	Variant         string      `json:"variant"`
-	TimeControl     string      `json:"time_control"`
-	Rated           bool        `json:"rated"`
-	Pool            string      `json:"pool"`
-	You             Player      `json:"you"`
-	Opponent        Player      `json:"opponent"`
-	Turn            string      `json:"turn"`
-	YourTurn        bool        `json:"your_turn"`
-	Ply             int         `json:"ply"`
-	FEN             string      `json:"fen"`
-	BoardASCII      string      `json:"board"`
-	InCheck         bool        `json:"in_check"`
-	LegalMoves      []LegalMove `json:"legal_moves"`
-	LastMove        *MoveInfo   `json:"last_move"`
-	MovesSAN        []string    `json:"moves_san"`
-	Clock           Clock       `json:"clocks"`
-	DrawOffer       string      `json:"draw_offer"` // "", "from_opponent", "from_you"
-	TakebackRequest string      `json:"takeback_request"`
-	ClaimableDraws  []string    `json:"claimable_draws"`
-	Result          *Result     `json:"result"`
-	Next            string      `json:"next"`
+	GameID       string `json:"game_id"`
+	Status       string `json:"status"` // created, started, finished, aborted
+	Variant      string `json:"variant"`
+	TimeControl  string `json:"time_control"`
+	Rated        bool   `json:"rated"`
+	Ruleset      string `json:"ruleset"`       // "casual" or "fide_strict"
+	HintsAllowed bool   `json:"hints_allowed"` // false in strict games: never draw legal-move dots
+	// TimeControlText is the clock in plain words; FlagText says what happens when it reaches zero.
+	TimeControlText string         `json:"time_control_text"`
+	FlagText        string         `json:"flag_text"`
+	RulesText       string         `json:"rules_text"`
+	Control         map[string]any `json:"control"` // initial_ms, increment_ms, delay_ms, bronstein_ms, move_cap_ms, bank_ms, days_per_move
+	Pool            string         `json:"pool"`
+	You             Player         `json:"you"`
+	Opponent        Player         `json:"opponent"`
+	Turn            string         `json:"turn"`
+	YourTurn        bool           `json:"your_turn"`
+	Ply             int            `json:"ply"`
+	FEN             string         `json:"fen"`
+	BoardASCII      string         `json:"board"`
+	InCheck         bool           `json:"in_check"`
+	LegalMoves      []LegalMove    `json:"legal_moves"`
+	LastMove        *MoveInfo      `json:"last_move"`
+	MovesSAN        []string       `json:"moves_san"`
+	Clock           Clock          `json:"clocks"`
+	DrawOffer       string         `json:"draw_offer"` // "", "from_opponent", "from_you"
+	TakebackRequest string         `json:"takeback_request"`
+	ClaimableDraws  []string       `json:"claimable_draws"`
+	Result          *Result        `json:"result"`
+	Next            string         `json:"next"`
 	// Tournament is set when this game belongs to a tournament.
 	Tournament *TournamentRef `json:"tournament,omitempty"`
+	// UserLocale is the language (en, fa, ar, es, fr, zh, ru, de, pl, ja, ko) the human behind your account reads:
+	// write notes and chat in it. OpponentLocale is the language of the person you play ("" for agents and bots).
+	UserLocale     string `json:"user_locale,omitempty"`
+	OpponentLocale string `json:"opponent_locale,omitempty"`
 
 	// Text is the server's full text rendering, handy for LLM prompts.
 	Text string `json:"-"`
@@ -119,6 +130,9 @@ type Position struct {
 	// ReceivedAt is when the SDK received this position.
 	ReceivedAt time.Time `json:"-"`
 }
+
+// Strict reports whether FIDE strict rules apply (illegal moves are penalised, no takebacks, no hints).
+func (p *Position) Strict() bool { return p.Ruleset == "fide_strict" }
 
 // Color is your color, "white" or "black".
 func (p *Position) Color() string { return p.You.Color }
@@ -213,6 +227,8 @@ type Challenge struct {
 	Status    string         `json:"status"`
 	GameID    string         `json:"game_id"`
 	ExpiresAt string         `json:"expires_at"`
+	// FromLocale is the language of the person who sent it ("" when the sender is an agent or a bot).
+	FromLocale string `json:"from_locale,omitempty"`
 }
 
 // Seek is an open invitation.
@@ -235,7 +251,9 @@ type Lobby struct {
 	Next               string      `json:"next"`
 	You                Agent       `json:"you"`
 	Tools              []string    `json:"tools"`
-	Text               string      `json:"-"`
+	// UserLocale is the language the human behind your account reads.
+	UserLocale string `json:"user_locale,omitempty"`
+	Text       string `json:"-"`
 }
 
 // Turn is the result of WaitForTurn.

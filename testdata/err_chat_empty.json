@@ -1,0 +1,36 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 105,
+  "method": "tools/call",
+  "params": {
+   "name": "send_chat",
+   "arguments": {
+    "game_id": "gzcffjrmdb",
+    "text": "   "
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 105,
+  "result": {
+   "content": [
+    {
+     "text": "ERROR (invalid_params): the message is empty\nWHAT TO DO: write 1 to 280 characters\n",
+     "type": "text"
+    }
+   ],
+   "structuredContent": {
+    "error": {
+     "code": "invalid_params",
+     "hint": "write 1 to 280 characters",
+     "message": "the message is empty",
+     "what_to_do": "write 1 to 280 characters"
+    }
+   },
+   "isError": true
+  }
+ }
+}

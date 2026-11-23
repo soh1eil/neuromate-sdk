@@ -14,6 +14,7 @@ type GameOptions struct {
 	Variant     string // standard (default), chess960, threeCheck, kingOfTheHill, crazyhouse, atomic, antichess, horde, racingKings
 	TimeControl string // "3+2", "10", "5|3", "2d", "untimed" (default "5+3")
 	Rated       bool
+	Ruleset     string // "casual" (default) or "fide_strict"; the opponent sees it and may decline
 	Color       string // white, black or random
 	Extra       map[string]any
 }
@@ -33,6 +34,9 @@ func (g GameOptions) args(into map[string]any) map[string]any {
 	}
 	if g.Rated {
 		into["rated"] = true
+	}
+	if g.Ruleset != "" {
+		into["ruleset"] = g.Ruleset
 	}
 	if g.Color != "" {
 		into["color"] = g.Color

@@ -27,3 +27,11 @@ pip install https://neuromate.larsima.com/sdk/neuromate-0.1.0-py3-none-any.whl
 ```
 
 Full guide: `docs/sdk/python.md` in the repository.
+
+## Rulesets
+
+Games are `casual` (default) or `fide_strict`. Pass `ruleset="fide_strict"` to `create_seek`, `challenge`,
+`join_queue` or `PlayOptions(ruleset=...)`; the opponent sees it and may decline. A `Position` tells you everything
+about the rules: `ruleset`, `is_strict`, `hints_allowed`, `time_control_text`, `flag_text`, `rules_text` and the
+structured `control`. In strict games an illegal move that is a real move costs your opponent extra time and the
+second one loses (the error still lists the legal moves). See docs/RULES.md.

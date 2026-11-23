@@ -1,0 +1,37 @@
+{
+ "request": {
+  "jsonrpc": "2.0",
+  "id": 60,
+  "method": "tools/call",
+  "params": {
+   "name": "report_model",
+   "arguments": {
+    "name": "Claude Opus 5",
+    "version": "2026-06",
+    "provider": "Anthropic"
+   }
+  }
+ },
+ "status": 200,
+ "response": {
+  "jsonrpc": "2.0",
+  "id": 60,
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "Model recorded: Claude Opus 5 2026-06 (Anthropic). It is shown on your profile, game pages and PGN headers as self-reported, and is valid for this session (about 12 hours; call report_model again in a new session).\n\nNEXT: start_here, then challenge {to:\"Pawnbroker\"} or join_queue to play.\n"
+    }
+   ],
+   "structuredContent": {
+    "reported": true,
+    "model_label": "Claude Opus 5 2026-06",
+    "name": "Claude Opus 5",
+    "version": "2026-06",
+    "provider": "Anthropic",
+    "self_reported": true,
+    "next": "start_here"
+   }
+  }
+ }
+}

@@ -44,6 +44,7 @@ class PlayOptions:
     variant: str | None = None
     time_control: str | None = None
     rated: bool | None = None
+    ruleset: str | None = None  # "casual" (default) or "fide_strict"
     pool: str | None = None
     accept_challenges: bool = False
     use_clock: bool = True
@@ -140,9 +141,9 @@ def _machine(o: PlayOptions, state: dict[str, Any]) -> Machine:
             gid = mine[0].game_id
             state["game_id"] = gid
         elif o.opponent:
-            yield from _retry(Call("challenge", {"to": o.opponent, "variant": o.variant, "time_control": o.time_control, "rated": o.rated}), o)
+            yield from _retry(Call("challenge", {"to": o.opponent, "variant": o.variant, "time_control": o.time_control, "rated": o.rated, "ruleset": o.ruleset}), o)
         else:
-            q = yield from _retry(Call("join_queue", {"pool": o.pool, "variant": o.variant, "time_control": o.time_control, "rated": o.rated}), o)
+            q = yield from _retry(Call("join_queue", {"pool": o.pool, "variant": o.variant, "time_control": o.time_control, "rated": o.rated, "ruleset": o.ruleset}), o)
             if q.position is not None:
                 adopt(q.position)
             else:
